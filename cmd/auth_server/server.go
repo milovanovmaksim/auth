@@ -27,3 +27,10 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 		},
 	}, nil
 }
+
+func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+	log.Printf("Create user: %+v", req.User)
+	return &desc.CreateResponse{
+		Id: 1,
+	}, nil
+}

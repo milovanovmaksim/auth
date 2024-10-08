@@ -34,3 +34,8 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 		Id: 1,
 	}, nil
 }
+
+func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) error {
+	log.Printf("Update user with id = %d", req.GetId())
+	return nil
+}

@@ -39,3 +39,8 @@ func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) error {
 	log.Printf("Update user with id = %d", req.GetId())
 	return nil
 }
+
+func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) error {
+	log.Printf("Delete user with id = %d", req.GetId())
+	return nil
+}

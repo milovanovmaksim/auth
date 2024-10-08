@@ -1,4 +1,4 @@
-package auths_erver
+package auth_server
 
 import (
 	"context"
@@ -9,11 +9,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type server struct {
+type Server struct {
 	desc.UnimplementedUserV1Server
 }
 
-func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+func (s *Server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	log.Printf("User id: %d", req.GetId())
 
 	return &desc.GetResponse{
@@ -28,19 +28,19 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 	}, nil
 }
 
-func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+func (s *Server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	log.Printf("Create user: %+v", req.User)
 	return &desc.CreateResponse{
 		Id: 1,
 	}, nil
 }
 
-func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) error {
+func (s *Server) Update(ctx context.Context, req *desc.UpdateRequest) error {
 	log.Printf("Update user with id = %d", req.GetId())
 	return nil
 }
 
-func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) error {
+func (s *Server) Delete(ctx context.Context, req *desc.DeleteRequest) error {
 	log.Printf("Delete user with id = %d", req.GetId())
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/brianvoe/gofakeit"
 	desc "github.com/olezhek28/microservices_course_boilerplate/pkg/auth_v1"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -35,12 +36,12 @@ func (s *Server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 	}, nil
 }
 
-func (s *Server) Update(ctx context.Context, req *desc.UpdateRequest) error {
+func (s *Server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
 	log.Printf("Update user with id = %d", req.GetId())
-	return nil
+	return &emptypb.Empty{}, nil
 }
 
-func (s *Server) Delete(ctx context.Context, req *desc.DeleteRequest) error {
+func (s *Server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Delete user with id = %d", req.GetId())
-	return nil
+	return &emptypb.Empty{}, nil
 }

@@ -10,11 +10,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Server ...
 type Server struct {
 	desc.UnimplementedUserV1Server
 }
 
-func (s *Server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+// Get ...
+func (s *Server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	log.Printf("User id: %d", req.GetId())
 
 	return &desc.GetResponse{
@@ -29,19 +31,22 @@ func (s *Server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 	}, nil
 }
 
-func (s *Server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+// Create ...
+func (s *Server) Create(_ context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	log.Printf("Create user: %+v", req.User)
 	return &desc.CreateResponse{
 		Id: 1,
 	}, nil
 }
 
-func (s *Server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
+// Update ...
+func (s *Server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
 	log.Printf("Update user with id = %d", req.GetId())
 	return &emptypb.Empty{}, nil
 }
 
-func (s *Server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
+// Delete ...
+func (s *Server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Delete user with id = %d", req.GetId())
 	return &emptypb.Empty{}, nil
 }

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/golang/protobuf/protoc-gen-go/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 

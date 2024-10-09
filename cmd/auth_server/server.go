@@ -41,7 +41,7 @@ func (s *Server) Create(_ context.Context, req *desc.CreateRequest) (*desc.Creat
 
 // Update ...
 func (s *Server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
-	log.Printf("Update user with id = %d", req.GetId())
+	log.Printf("Update user with id = %d", req.User.GetId())
 	return &emptypb.Empty{}, nil
 }
 

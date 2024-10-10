@@ -1,11 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/fatih/color"
+	"github.com/olezhek28/microservices_course_boilerplate/cmd/auth_server"
 )
 
+const grpcPort = 50051
+
 func main() {
-	fmt.Println(color.GreenString("Hello, world!"))
+	server := auth_server.Server{}
+	err := server.Start(grpcPort)
+	if err != nil {
+		log.Fatalf("failed to start a server | err: %v", err)
+	}
 }

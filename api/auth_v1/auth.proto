@@ -15,10 +15,10 @@ enum Role {
 }
 
 service UserV1 {
-  rpc CreateUser(CreateRequest) returns (CreateResponse);
-  rpc GetUser(GetRequest) returns (GetResponse);
-  rpc UpdateUser(UpdateRequest) returns (google.protobuf.Empty);
-  rpc DeleteUser(DeleteRequest) returns (google.protobuf.Empty);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
 }
 
 message User {
@@ -39,19 +39,19 @@ message CreateUser {
   
 }
 
-message CreateRequest {
+message CreateUserRequest {
   CreateUser user = 1;
   }
 
-message CreateResponse {
+message CreateUserResponse {
   int64 id = 1;
 }
 
-message GetRequest {
+message GetUserRequest {
   int64 id = 1;
 }
 
-message GetResponse {
+message GetUserResponse {
   User user = 1;
 }
 
@@ -62,10 +62,10 @@ message UpdateUser {
   
 }
 
-message UpdateRequest {
+message UpdateUserRequest {
   UpdateUser user = 1;
 } 
 
-message DeleteRequest {
+message DeleteUserRequest {
   int64 id = 1;
 }

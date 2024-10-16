@@ -26,10 +26,6 @@ func NewServer(postgreSql *pgsql.PostgreSQL) Server {
 	return Server{postgreSql, desc.UnimplementedUserV1Server{}}
 }
 
-func (s *Server) Stop() {
-	s.postgreSql.Close()
-}
-
 // GetUser возвращает информацию о пользователе.
 func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
 	log.Printf("User id: %d", req.GetId())
@@ -85,4 +81,8 @@ func (s *Server) Start(grpcPort int64) error {
 	}
 
 	return nil
+}
+
+func (s *Server) Stop() {
+	s.postgreSql.Close()
 }

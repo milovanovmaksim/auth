@@ -7,6 +7,11 @@ import (
 	"strconv"
 )
 
+const (
+	pgUser = "PG_USER"
+	pgPassword = "PG_PASSWORD"
+)
+
 type Config struct {
 	Username     string
 	Password     string
@@ -24,12 +29,12 @@ func NewConfigFromEnv() (*Config, error) {
 	var port uint64
 	var err error
 
-	username := os.Getenv("PG_USER")
+	username := os.Getenv(pgUser)
 	if len(username) == 0 {
-		return nil, errors.New("PG_USER must be set")
+		return nil, fmt.Errorf("%s must be set", pgUser)
 	}
 
-	password := os.Getenv("PG_PASSWORD")
+	password := os.Getenv(pgPassword)
 	if len(password) == 0 {
 		return nil, errors.New("PG_PASSWORD must be set")
 	}

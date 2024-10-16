@@ -46,7 +46,7 @@ func NewConfigFromEnv() (*Config, error) {
 
 	host := os.Getenv("PG_HOST")
 	if len(host) == 0 {
-		return nil, errors.New("PG_PORT must be set")
+		return nil, errors.New("PG_HOST must be set")
 	}
 
 	databaseName := os.Getenv("PG_DATABASE_NAME")

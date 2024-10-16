@@ -12,12 +12,22 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/milovanovmaksim/auth/internal/pgsql"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
 // Server - cервер аутентификации пользователя.
 type Server struct {
+	postgreSql *pgsql.PostgreSQL
 	desc.UnimplementedUserV1Server
+}
+
+func NewServer(postgreSql *pgsql.PostgreSQL) Server {
+	return Server{postgreSql, desc.UnimplementedUserV1Server{}}
+}
+
+func (s *Server) Stop() {
+	s.postgreSql.Close()
 }
 
 // GetUser возвращает информацию о пользователе.

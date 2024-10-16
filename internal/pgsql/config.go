@@ -65,6 +65,5 @@ func NewConfigFromEnv() (*Config, error) {
 }
 
 func (c *Config) Dsn() string {
-	dsn := fmt.Sprintf("host=%s port=%v dbname=%s user=%s password=%s sslmode=%v", c.Host, c.Port, c.DatabaseName, c.Username, c.Password, c.SslMode)
-	return dsn
+	return fmt.Sprintf("host=%s port=%v dbname=%s user=%s password=%s sslmode=%v", c.Host, c.Port, c.DatabaseName, c.Username, c.Password, c.SslMode)
 }

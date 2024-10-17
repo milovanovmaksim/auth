@@ -22,16 +22,15 @@ import (
 type Server struct {
 	postgreSql *pgsql.PostgreSQL
 	grpcConfig *grpc_config.GrpcConfig
-	ctx        context.Context
 	desc.UnimplementedUserV1Server
 }
 
-func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig, ctx context.Context) Server {
-	return Server{postgreSql, grpcConfig, ctx, desc.UnimplementedUserV1Server{}}
+func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
+	return Server{postgreSql, grpcConfig, desc.UnimplementedUserV1Server{}}
 }
 
 // GetUser возвращает информацию о пользователе.
-func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
+func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
 	var id int64
 	var role, name, email string
 	var createdAt time.Time
@@ -39,7 +38,7 @@ func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.Get
 
 	pool := s.postgreSql.GetPool()
 
-	row := pool.QueryRow(s.ctx, "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1", req.GetId())
+	row := pool.QueryRow(ctx, "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1", req.GetId())
 
 	err := row.Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
 	if err != nil {
@@ -60,12 +59,12 @@ func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.Get
 }
 
 // CreateUser создает нового пользователя.
-func (s *Server) CreateUser(_ context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
+func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
 	var id int64
 
 	pool := s.postgreSql.GetPool()
 
-	err := pool.QueryRow(s.ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
+	err := pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
 		req.User.Name, req.User.Email, req.User.Password, req.User.Role.String()).Scan(&id)
 	if err != nil {
 		fmt.Printf("failed to insert user: %v", err)
@@ -83,10 +82,10 @@ func (s *Server) UpdateUser(_ context.Context, req *desc.UpdateUserRequest) (*em
 }
 
 // DeleteUser удаляет пользователя.
-func (s *Server) DeleteUser(_ context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
+func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
 	pool := s.postgreSql.GetPool()
 
-	_, err := pool.Exec(s.ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
+	_, err := pool.Exec(ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
 	if err != nil {
 		fmt.Printf("failed to delete user: %v", err)
 	}

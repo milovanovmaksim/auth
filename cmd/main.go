@@ -34,7 +34,7 @@ func main() {
 		log.Fatalf("failed to connect to PostgreSQL || err: %v", err)
 	}
 
-	server := auth_server.NewServer(postgreSql, grpcConfig)
+	server := auth_server.NewServer(postgreSql, grpcConfig, ctx)
 	err = server.Start()
 	if err != nil {
 		log.Fatalf("failed to start a server || err: %v", err)

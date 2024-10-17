@@ -2,7 +2,6 @@ package auth_server
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
@@ -12,6 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/milovanovmaksim/auth/internal/config"
 	"github.com/milovanovmaksim/auth/internal/pgsql"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
@@ -19,11 +19,12 @@ import (
 // Server - cервер аутентификации пользователя.
 type Server struct {
 	postgreSql *pgsql.PostgreSQL
+	grpcConfig *config.GrpcConfig
 	desc.UnimplementedUserV1Server
 }
 
-func NewServer(postgreSql *pgsql.PostgreSQL) Server {
-	return Server{postgreSql, desc.UnimplementedUserV1Server{}}
+func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *config.GrpcConfig) Server {
+	return Server{postgreSql, grpcConfig, desc.UnimplementedUserV1Server{}}
 }
 
 // GetUser возвращает информацию о пользователе.
@@ -63,8 +64,8 @@ func (s *Server) DeleteUser(_ context.Context, req *desc.DeleteUserRequest) (*em
 }
 
 // Start cтарт сервера аутентификации пользователя.
-func (s *Server) Start(grpcPort int64) error {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", grpcPort))
+func (s *Server) Start() error {
+	lis, err := net.Listen("tcp", s.grpcConfig.Address())
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 		return err

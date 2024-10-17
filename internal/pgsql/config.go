@@ -1,15 +1,18 @@
 package pgsql
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
 )
 
 const (
-	pgUser = "PG_USER"
-	pgPassword = "PG_PASSWORD"
+	pgUser         = "PG_USER"
+	pgPassword     = "PG_PASSWORD"
+	pgHost         = "PG_HOST"
+	pgPort         = "PG_PORT"
+	pgDatabaseName = "PG_DATABASE_NAME"
+	sslMode        = "SSL_MODE"
 )
 
 type Config struct {
@@ -36,32 +39,32 @@ func NewConfigFromEnv() (*Config, error) {
 
 	password := os.Getenv(pgPassword)
 	if len(password) == 0 {
-		return nil, errors.New("PG_PASSWORD must be set")
+		return nil, fmt.Errorf("%s must be set", pgPassword)
 	}
 
-	portAsString := os.Getenv("PG_PORT")
+	portAsString := os.Getenv(pgPort)
 	if len(portAsString) == 0 {
-		return nil, errors.New("PG_PORT must be set")
+		return nil, fmt.Errorf("%s must be set", pgPort)
 	} else {
 		port, err = strconv.ParseUint(portAsString, 0, 16)
 		if err != nil {
-			return nil, errors.New("failed to parse PG_PORT")
+			return nil, fmt.Errorf("failed to parse %s as uint16", pgPort)
 		}
 	}
 
-	host := os.Getenv("PG_HOST")
+	host := os.Getenv(pgHost)
 	if len(host) == 0 {
-		return nil, errors.New("PG_HOST must be set")
+		return nil, fmt.Errorf("%s must be set", pgHost)
 	}
 
-	databaseName := os.Getenv("PG_DATABASE_NAME")
+	databaseName := os.Getenv(pgDatabaseName)
 	if len(databaseName) == 0 {
-		return nil, errors.New("PG_DATABASE_NAME must be set")
+		return nil, fmt.Errorf("%s must be set", pgDatabaseName)
 	}
 
-	sslMode := os.Getenv("SSL_MODE")
+	sslMode := os.Getenv(sslMode)
 	if len(sslMode) == 0 {
-		return nil, errors.New("SSL_MODE must be set")
+		return nil, fmt.Errorf("%s must be set", sslMode)
 	}
 
 	config := NewConfig(username, password, uint16(port), host, databaseName, sslMode)

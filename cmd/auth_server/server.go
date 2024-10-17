@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/milovanovmaksim/auth/internal/config"
+	grpc_config "github.com/milovanovmaksim/auth/internal/config"
 	"github.com/milovanovmaksim/auth/internal/pgsql"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
@@ -21,12 +21,12 @@ import (
 // Server - cервер аутентификации пользователя.
 type Server struct {
 	postgreSql *pgsql.PostgreSQL
-	grpcConfig *config.GrpcConfig
+	grpcConfig *grpc_config.GrpcConfig
 	ctx        context.Context
 	desc.UnimplementedUserV1Server
 }
 
-func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *config.GrpcConfig, ctx context.Context) Server {
+func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig, ctx context.Context) Server {
 	return Server{postgreSql, grpcConfig, ctx, desc.UnimplementedUserV1Server{}}
 }
 

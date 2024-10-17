@@ -3,7 +3,6 @@ module github.com/milovanovmaksim/auth
 go 1.23
 
 require (
-	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
 )
@@ -17,6 +16,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
 )
 

@@ -111,6 +111,8 @@ func (s *Server) Start() error {
 		return err
 	}
 
+	defer server.Stop()
+
 	return nil
 }
 

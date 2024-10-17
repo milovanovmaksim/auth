@@ -2,11 +2,12 @@ package auth_server
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net"
+	"time"
 
-	"github.com/brianvoe/gofakeit"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -31,16 +32,29 @@ func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *config.GrpcConfig, ctx 
 
 // GetUser возвращает информацию о пользователе.
 func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
-	log.Printf("User id: %d", req.GetId())
+	var id int64
+	var role, name, email string
+	var createdAt time.Time
+	var updatedAt sql.NullTime
+
+	pool := s.postgreSql.GetPool()
+
+	row := pool.QueryRow(s.ctx, "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1", req.GetId())
+
+	err := row.Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
+	if err != nil {
+		fmt.Printf("failed to get user: %v", err)
+		return nil, err
+	}
 
 	return &desc.GetUserResponse{
 		User: &desc.User{
-			Id:        req.GetId(),
-			Name:      "Maxim",
-			Email:     "bla-bla@mail.com",
-			Role:      desc.Role_ADMIN,
-			CreatedAt: timestamppb.New(gofakeit.Date()),
-			UpdatedAt: timestamppb.New(gofakeit.Date()),
+			Id:        id,
+			Name:      name,
+			Email:     email,
+			Role:      desc.Role(desc.Role_value[role]),
+			CreatedAt: timestamppb.New(createdAt),
+			UpdatedAt: timestamppb.New(updatedAt.Time),
 		},
 	}, nil
 }
@@ -70,7 +84,12 @@ func (s *Server) UpdateUser(_ context.Context, req *desc.UpdateUserRequest) (*em
 
 // DeleteUser удаляет пользователя.
 func (s *Server) DeleteUser(_ context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
-	log.Printf("Delete user with id = %d", req.GetId())
+	pool := s.postgreSql.GetPool()
+
+	_, err := pool.Exec(s.ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
+	if err != nil {
+		fmt.Printf("failed to delete user: %v", err)
+	}
 	return &emptypb.Empty{}, nil
 }
 

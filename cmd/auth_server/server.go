@@ -2,6 +2,7 @@ package auth_server
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -20,11 +21,12 @@ import (
 type Server struct {
 	postgreSql *pgsql.PostgreSQL
 	grpcConfig *config.GrpcConfig
+	ctx        context.Context
 	desc.UnimplementedUserV1Server
 }
 
-func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *config.GrpcConfig) Server {
-	return Server{postgreSql, grpcConfig, desc.UnimplementedUserV1Server{}}
+func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *config.GrpcConfig, ctx context.Context) Server {
+	return Server{postgreSql, grpcConfig, ctx, desc.UnimplementedUserV1Server{}}
 }
 
 // GetUser возвращает информацию о пользователе.
@@ -45,10 +47,19 @@ func (s *Server) GetUser(_ context.Context, req *desc.GetUserRequest) (*desc.Get
 
 // CreateUser создает нового пользователя.
 func (s *Server) CreateUser(_ context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
-	log.Printf("Create user: %+v", req.User)
-	return &desc.CreateUserResponse{
-		Id: 1,
-	}, nil
+	var id int64
+
+	pool := s.postgreSql.GetPool()
+
+	err := pool.QueryRow(s.ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
+		req.User.Name, req.User.Email, req.User.Password, req.User.Role.String()).Scan(&id)
+	if err != nil {
+		fmt.Printf("failed to insert user: %v", err)
+		return nil, err
+	}
+
+	return &desc.CreateUserResponse{Id: id}, nil
+
 }
 
 // UpdateUser обновляет данные о пользователе.

@@ -108,6 +108,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*
 		fmt.Printf("failed to delete user: %v", err)
 		return nil, err
 	}
+
 	return &emptypb.Empty{}, nil
 }
 

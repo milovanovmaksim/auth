@@ -93,6 +93,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*
 	_, err := pool.Exec(ctx, "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role)", name, role)
 	if err != nil {
 		fmt.Printf("failed to update user: %v", err)
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
@@ -105,6 +106,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*
 	_, err := pool.Exec(ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
 	if err != nil {
 		fmt.Printf("failed to delete user: %v", err)
+		return nil, err
 	}
 	return &emptypb.Empty{}, nil
 }

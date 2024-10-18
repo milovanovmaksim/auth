@@ -65,7 +65,7 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 	pool := s.postgreSql.GetPool()
 
 	err := pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
-		req.User.Name, req.User.Email, req.User.Password, req.User.Role.String()).Scan(&id)
+		req.User.Name, req.User.Email, req.User.Password, req.User.GetRole().String()).Scan(&id)
 	if err != nil {
 		fmt.Printf("failed to insert user: %v", err)
 		return nil, err
@@ -76,8 +76,25 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 }
 
 // UpdateUser обновляет данные о пользователе.
-func (s *Server) UpdateUser(_ context.Context, req *desc.UpdateUserRequest) (*emptypb.Empty, error) {
-	log.Printf("Update user with id = %d", req.User.GetId())
+func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*emptypb.Empty, error) {
+	var name sql.NullString
+	var role sql.NullString
+
+	pool := s.postgreSql.GetPool()
+
+	if req.User.GetName().GetValue() != "" {
+		name = sql.NullString{String: req.User.GetName().GetValue(), Valid: true}
+	}
+
+	if req.GetUser().GetRole().Number() != 0 {
+		role = sql.NullString{String: req.GetUser().GetRole().String(), Valid: true}
+	}
+
+	_, err := pool.Exec(ctx, "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role)", name, role)
+	if err != nil {
+		fmt.Printf("failed to update user: %v", err)
+	}
+
 	return &emptypb.Empty{}, nil
 }
 

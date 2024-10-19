@@ -15,6 +15,7 @@ const (
 	sslMode        = "SSL_MODE"
 )
 
+// Config содержит настройки для базы данных PostgreSQL.
 type Config struct {
 	Username     string
 	Password     string
@@ -24,10 +25,11 @@ type Config struct {
 	Port         uint16
 }
 
-func NewConfig(username string, password string, port uint16, host string, databaseName string, sslMode string) Config {
+func newConfig(username string, password string, port uint16, host string, databaseName string, sslMode string) Config {
 	return Config{username, password, host, databaseName, sslMode, port}
 }
 
+// NewConfigFromEnv создает новый Config объект из .env файла.
 func NewConfigFromEnv() (*Config, error) {
 	var port uint64
 	var err error
@@ -45,11 +47,11 @@ func NewConfigFromEnv() (*Config, error) {
 	portAsString := os.Getenv(pgPort)
 	if len(portAsString) == 0 {
 		return nil, fmt.Errorf("%s must be set", pgPort)
-	} else {
-		port, err = strconv.ParseUint(portAsString, 0, 16)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse %s as uint16", pgPort)
-		}
+	}
+
+	port, err = strconv.ParseUint(portAsString, 0, 16)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse %s as uint16", pgPort)
 	}
 
 	host := os.Getenv(pgHost)
@@ -67,11 +69,13 @@ func NewConfigFromEnv() (*Config, error) {
 		return nil, fmt.Errorf("%s must be set", sslMode)
 	}
 
-	config := NewConfig(username, password, uint16(port), host, databaseName, sslMode)
+	config := newConfig(username, password, uint16(port), host, databaseName, sslMode)
 
 	return &config, nil
 }
 
+// Dsn возвращает DSN(имя источника данных), которое будет использоваться
+// для подключения к базе данных PostgreSQL.
 func (c *Config) Dsn() string {
 	return fmt.Sprintf("host=%s port=%v dbname=%s user=%s password=%s sslmode=%v", c.Host, c.Port, c.DatabaseName, c.Username, c.Password, c.SslMode)
 }

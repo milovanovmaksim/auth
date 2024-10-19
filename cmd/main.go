@@ -34,11 +34,11 @@ func main() {
 		log.Fatalf("failed to connect to PostgreSQL || err: %v", err)
 	}
 
+	defer postgreSql.Close()
+
 	server := auth_server.NewServer(postgreSql, grpcConfig)
 	err = server.Start()
 	if err != nil {
 		log.Fatalf("failed to start a server || err: %v", err)
 	}
-
-	defer server.Stop()
 }

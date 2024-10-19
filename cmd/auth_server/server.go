@@ -25,6 +25,7 @@ type Server struct {
 	desc.UnimplementedUserV1Server
 }
 
+// NewServer создает новый Server объект.
 func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
 	return Server{postgreSql, grpcConfig, desc.UnimplementedUserV1Server{}}
 }

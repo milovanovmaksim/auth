@@ -29,14 +29,14 @@ func main() {
 		log.Fatalf("failed to load grpc config || err: %v", err)
 	}
 
-	postgreSql, err := pgsql.Connect(ctx, dbConfig)
+	postgreSQL, err := pgsql.Connect(ctx, dbConfig)
 	if err != nil {
 		log.Fatalf("failed to connect to PostgreSQL || err: %v", err)
 	}
 
-	defer postgreSql.Close()
+	defer postgreSQL.Close()
 
-	server := auth_server.NewServer(postgreSql, grpcConfig)
+	server := auth_server.NewServer(postgreSQL, grpcConfig)
 	err = server.Start()
 	if err != nil {
 		log.Fatalf("failed to start a server || err: %v", err)

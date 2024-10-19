@@ -21,14 +21,14 @@ import (
 
 // Server - cервер аутентификации пользователя.
 type Server struct {
-	postgreSql *pgsql.PostgreSQL
+	postgreSQL *pgsql.PostgreSQL
 	grpcConfig *grpc_config.GrpcConfig
 	desc.UnimplementedUserV1Server
 }
 
 // NewServer создает новый Server объект.
-func NewServer(postgreSql *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
-	return Server{postgreSql, grpcConfig, desc.UnimplementedUserV1Server{}}
+func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
+	return Server{postgreSQL, grpcConfig, desc.UnimplementedUserV1Server{}}
 }
 
 // GetUser возвращает информацию о пользователе.
@@ -38,7 +38,7 @@ func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.G
 	var createdAt time.Time
 	var updatedAt sql.NullTime
 
-	pool := s.postgreSql.GetPool()
+	pool := s.postgreSQL.GetPool()
 
 	row := pool.QueryRow(ctx, "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1", req.GetId())
 
@@ -68,16 +68,16 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 		return nil, fmt.Errorf("password and password_confirm should be the same")
 	}
 
-	hash_password, err := s.hashPassword(req.User.Password)
+	hashPassword, err := s.hashPassword(req.User.Password)
 	if err != nil {
 		log.Printf("failed to get hash fo password || err: %v", err)
 		return nil, fmt.Errorf("internal error")
 	}
 
-	pool := s.postgreSql.GetPool()
+	pool := s.postgreSQL.GetPool()
 
 	err = pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
-		req.User.Name, req.User.Email, hash_password, req.User.GetRole().String()).Scan(&id)
+		req.User.Name, req.User.Email, hashPassword, req.User.GetRole().String()).Scan(&id)
 	if err != nil {
 		fmt.Printf("failed to insert user: %v", err)
 		return nil, err
@@ -88,8 +88,8 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 }
 
 func (s *Server) hashPassword(password string) (string, error) {
-    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-    return string(bytes), err
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
 // UpdateUser обновляет данные о пользователе.
@@ -97,7 +97,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*
 	var name sql.NullString
 	var role sql.NullString
 
-	pool := s.postgreSql.GetPool()
+	pool := s.postgreSQL.GetPool()
 
 	if req.User.GetName().GetValue() != "" {
 		name = sql.NullString{String: req.User.GetName().GetValue(), Valid: true}
@@ -118,7 +118,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*
 
 // DeleteUser удаляет пользователя.
 func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
-	pool := s.postgreSql.GetPool()
+	pool := s.postgreSQL.GetPool()
 
 	_, err := pool.Exec(ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
 	if err != nil {

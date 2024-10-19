@@ -3,6 +3,7 @@ module github.com/milovanovmaksim/auth
 go 1.23
 
 require (
+	golang.org/x/crypto v0.26.0
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
 )
@@ -17,7 +18,6 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
 )
 
 require (

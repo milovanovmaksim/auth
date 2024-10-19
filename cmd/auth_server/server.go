@@ -8,6 +8,7 @@ import (
 	"net"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -63,10 +64,20 @@ func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.G
 func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
 	var id int64
 
+	if req.User.Password != req.User.PasswordConfirm {
+		return nil, fmt.Errorf("password and password_confirm should be the same")
+	}
+
+	hash_password, err := s.hashPassword(req.User.Password)
+	if err != nil {
+		log.Printf("failed to get hash fo password || err: %v", err)
+		return nil, fmt.Errorf("internal error")
+	}
+
 	pool := s.postgreSql.GetPool()
 
-	err := pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
-		req.User.Name, req.User.Email, req.User.Password, req.User.GetRole().String()).Scan(&id)
+	err = pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
+		req.User.Name, req.User.Email, hash_password, req.User.GetRole().String()).Scan(&id)
 	if err != nil {
 		fmt.Printf("failed to insert user: %v", err)
 		return nil, err
@@ -74,6 +85,11 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 
 	return &desc.CreateUserResponse{Id: id}, nil
 
+}
+
+func (s *Server) hashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    return string(bytes), err
 }
 
 // UpdateUser обновляет данные о пользователе.

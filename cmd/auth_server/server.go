@@ -23,12 +23,13 @@ import (
 type Server struct {
 	postgreSQL *pgsql.PostgreSQL
 	grpcConfig *grpc_config.GrpcConfig
+	grpcServer *grpc.Server
 	desc.UnimplementedUserV1Server
 }
 
 // NewServer создает новый Server объект.
 func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
-	return Server{postgreSQL, grpcConfig, desc.UnimplementedUserV1Server{}}
+	return Server{postgreSQL, grpcConfig, nil, desc.UnimplementedUserV1Server{}}
 }
 
 // GetUser возвращает информацию о пользователе.
@@ -70,7 +71,7 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 
 	hashPassword, err := s.hashPassword(req.User.Password)
 	if err != nil {
-		log.Printf("failed to get hash fo password || err: %v", err)
+		log.Printf("failed to get hash for password || err: %v", err)
 		return nil, fmt.Errorf("internal error")
 	}
 
@@ -137,17 +138,25 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	server := grpc.NewServer()
-	reflection.Register(server)
-	desc.RegisterUserV1Server(server, s)
+	s.grpcServer = grpc.NewServer()
+
+	reflection.Register(s.grpcServer)
+	desc.RegisterUserV1Server(s.grpcServer, s)
 	log.Printf("server listening at %v", lis.Addr())
 
-	if err = server.Serve(lis); err != nil {
+	if err = s.grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 		return err
 	}
 
-	defer server.Stop()
+	defer s.grpcServer.Stop()
 
 	return nil
+}
+
+// Stop остановка сервера.
+func (s *Server) Stop() {
+	if s.grpcServer != nil {
+		s.grpcServer.Stop()
+	}
 }

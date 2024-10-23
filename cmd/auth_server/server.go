@@ -21,15 +21,15 @@ import (
 
 // Server - cервер аутентификации пользователя.
 type Server struct {
+	desc.UnimplementedUserV1Server
 	postgreSQL *pgsql.PostgreSQL
 	grpcConfig *grpc_config.GrpcConfig
 	grpcServer *grpc.Server
-	desc.UnimplementedUserV1Server
 }
 
 // NewServer создает новый Server объект.
 func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
-	return Server{postgreSQL, grpcConfig, nil, desc.UnimplementedUserV1Server{}}
+	return Server{desc.UnimplementedUserV1Server{}, postgreSQL, grpcConfig, nil}
 }
 
 // GetUser возвращает информацию о пользователе.
@@ -66,7 +66,7 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 	var id int64
 
 	if req.User.Password != req.User.PasswordConfirm {
-		return nil, fmt.Errorf("password and password_confirm should be the same")
+		return nil, fmt.Errorf("password and password_confirm must be the same")
 	}
 
 	hashPassword, err := s.hashPassword(req.User.Password)
@@ -85,7 +85,6 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 	}
 
 	return &desc.CreateUserResponse{Id: id}, nil
-
 }
 
 func (s *Server) hashPassword(password string) (string, error) {

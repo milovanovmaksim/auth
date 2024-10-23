@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/milovanovmaksim/auth/cmd/auth_server"
-	grpc_config "github.com/milovanovmaksim/auth/internal/config"
+	grpcConfig "github.com/milovanovmaksim/auth/internal/config"
 	"github.com/milovanovmaksim/auth/internal/pgsql"
 )
 
@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("failed to load config || err: %v", err)
 	}
 
-	grpcConfig, err := grpc_config.NewGrpcConfigFromEnv()
+	grpcConfig, err := grpcConfig.NewGrpcConfigFromEnv()
 	if err != nil {
 		log.Fatalf("failed to load grpc config || err: %v", err)
 	}

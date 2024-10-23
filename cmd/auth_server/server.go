@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	grpc_config "github.com/milovanovmaksim/auth/internal/config"
+	grpcConfig "github.com/milovanovmaksim/auth/internal/config"
 	"github.com/milovanovmaksim/auth/internal/pgsql"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
@@ -23,12 +23,12 @@ import (
 type Server struct {
 	desc.UnimplementedUserV1Server
 	postgreSQL *pgsql.PostgreSQL
-	grpcConfig *grpc_config.GrpcConfig
+	grpcConfig *grpcConfig.GrpcConfig
 	grpcServer *grpc.Server
 }
 
 // NewServer создает новый Server объект.
-func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpc_config.GrpcConfig) Server {
+func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpcConfig.GrpcConfig) Server {
 	return Server{desc.UnimplementedUserV1Server{}, postgreSQL, grpcConfig, nil}
 }
 

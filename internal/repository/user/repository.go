@@ -9,6 +9,6 @@ type userRepositoryImpl struct {
 	pgSQL pgsql.PostgreSQL
 }
 
-func NewUserRepositoryImpl(pgSQL pgsql.PostgreSQL) repository.UserRepository {
+func NewUserRepository(pgSQL pgsql.PostgreSQL) repository.UserRepository {
 	return &userRepositoryImpl{pgSQL}
 }

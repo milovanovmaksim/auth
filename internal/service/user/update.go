@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log"
 
 	"github.com/milovanovmaksim/auth/internal/repository"
 	"github.com/milovanovmaksim/auth/internal/service"
@@ -24,7 +24,7 @@ func (s *userServiceImpl) UpdateUser(ctx context.Context, request service.Update
 	})
 
 	if err != nil {
-		fmt.Printf("failed to update user userServiceImpl.UpdateUser || err: %v", err)
+		log.Printf("failed to update user userServiceImpl.UpdateUser || err: %v", err)
 		return err
 	}
 

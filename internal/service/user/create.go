@@ -28,7 +28,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 	})
 
 	if err != nil {
-		fmt.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
+		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
 		return nil, err
 	}
 

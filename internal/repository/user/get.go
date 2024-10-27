@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	repo "github.com/milovanovmaksim/auth/internal/repository"
 )
@@ -15,7 +15,7 @@ func (s *userRepositoryImpl) GetUser(ctx context.Context, request int64) (*repo.
 
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		fmt.Printf("failed to get user userRepositoryImpl.GetUser || err:  %v", err)
+		log.Printf("failed to get user userRepositoryImpl.GetUser || err:  %v", err)
 		return nil, err
 	}
 

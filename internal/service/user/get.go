@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/milovanovmaksim/auth/internal/service"
 )
@@ -10,7 +10,7 @@ import (
 func (s *userServiceImpl) GetUser(ctx context.Context, request int64) (*service.GetUserResponse, error) {
 	user, err := s.userRepository.GetUser(ctx, request)
 	if err != nil {
-		fmt.Printf("failed to get user userServiceImpl.GetUser || err: %v", err)
+		log.Printf("failed to get user userServiceImpl.GetUser || err: %v", err)
 		return nil, err
 	}
 

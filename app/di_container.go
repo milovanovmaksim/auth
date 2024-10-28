@@ -4,10 +4,12 @@ import (
 	"context"
 	"log"
 
-	"github.com/milovanovmaksim/auth/internal/config"
-	"github.com/milovanovmaksim/auth/internal/pgsql"
+	"github.com/milovanovmaksim/auth/internal/client/database"
+	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
 	"github.com/milovanovmaksim/auth/internal/repository"
 	userRepo "github.com/milovanovmaksim/auth/internal/repository/user"
+	"github.com/milovanovmaksim/auth/internal/server"
+	"github.com/milovanovmaksim/auth/internal/server/grpc"
 	"github.com/milovanovmaksim/auth/internal/service"
 	userService "github.com/milovanovmaksim/auth/internal/service/user"
 )
@@ -15,9 +17,9 @@ import (
 type diContainer struct {
 	userRepository repository.UserRepository
 	userService    service.UserService
-	pgSQL          *pgsql.PostgreSQL
-	pgConfig       *pgsql.Config
-	grpcConfig     *config.GrpcConfig
+	pgSQL          *postgresql.PostgreSQL
+	pgConfig       database.DBConfig
+	grpcConfig     server.ServerConfig
 }
 
 func newDiContainer() *diContainer {
@@ -28,6 +30,7 @@ func (di *diContainer) UserRepository(ctx context.Context) repository.UserReposi
 	if di.userRepository == nil {
 		di.userRepository = userRepo.NewUserRepository(*di.PostgreSQL(ctx))
 	}
+
 	return di.userRepository
 }
 
@@ -39,9 +42,9 @@ func (di *diContainer) UserService(ctx context.Context) service.UserService {
 	return di.userService
 }
 
-func (di *diContainer) PGConfig() *pgsql.Config {
+func (di *diContainer) PGConfig() database.DBConfig {
 	if di.pgConfig == nil {
-		config, err := pgsql.NewConfigFromEnv()
+		config, err := postgresql.NewConfigFromEnv()
 		if err != nil {
 			log.Fatalf("failed to get DB config || error: %v", err.Error())
 		}
@@ -52,9 +55,9 @@ func (di *diContainer) PGConfig() *pgsql.Config {
 	return di.pgConfig
 }
 
-func (di *diContainer) GRPCConfig() *config.GrpcConfig {
+func (di *diContainer) GRPCConfig() server.ServerConfig {
 	if di.grpcConfig == nil {
-		cfg, err := config.NewGrpcConfigFromEnv()
+		cfg, err := grpc.NewGrpcConfigFromEnv()
 		if err != nil {
 			log.Fatalf("failed to get grpc config || error: %v", err.Error())
 		}
@@ -65,9 +68,9 @@ func (di *diContainer) GRPCConfig() *config.GrpcConfig {
 	return di.grpcConfig
 }
 
-func (di *diContainer) PostgreSQL(ctx context.Context) *pgsql.PostgreSQL {
+func (di *diContainer) PostgreSQL(ctx context.Context) *postgresql.PostgreSQL {
 	if di.pgSQL == nil {
-		pgSQL, err := pgsql.Connect(ctx, di.PGConfig())
+		pgSQL, err := postgresql.Connect(ctx, di.PGConfig())
 		if err != nil {
 			log.Fatalf("failed to connect to PostgreSQL server")
 		}

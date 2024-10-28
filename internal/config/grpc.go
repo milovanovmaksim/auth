@@ -35,7 +35,6 @@ func NewGrpcConfigFromEnv() (*GrpcConfig, error) {
 
 	config := newGrpcConfig(port, host)
 	return &config, nil
-
 }
 
 // Address возвращает адрес grpc сервера.

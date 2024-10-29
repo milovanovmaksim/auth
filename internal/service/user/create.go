@@ -26,7 +26,6 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 		HashPassword: hashPassword,
 		Role:         request.Role,
 	})
-
 	if err != nil {
 		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
 		return nil, err
@@ -35,5 +34,4 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 	return &service.CreateUserResponse{
 		ID: user.ID,
 	}, nil
-
 }

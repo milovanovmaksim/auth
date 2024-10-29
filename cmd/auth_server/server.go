@@ -2,114 +2,72 @@ package auth_server
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"log"
 	"net"
-	"time"
 
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
-	grpcConfig "github.com/milovanovmaksim/auth/internal/config"
-	"github.com/milovanovmaksim/auth/internal/pgsql"
+	"github.com/milovanovmaksim/auth/internal/server"
+	"github.com/milovanovmaksim/auth/internal/service"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
 // Server - cервер аутентификации пользователя.
 type Server struct {
 	desc.UnimplementedUserV1Server
-	postgreSQL *pgsql.PostgreSQL
-	grpcConfig *grpcConfig.GrpcConfig
+	grpcConfig server.ServerConfig
 	grpcServer *grpc.Server
+	service    service.UserService
 }
 
 // NewServer создает новый Server объект.
-func NewServer(postgreSQL *pgsql.PostgreSQL, grpcConfig *grpcConfig.GrpcConfig) Server {
-	return Server{desc.UnimplementedUserV1Server{}, postgreSQL, grpcConfig, nil}
+func NewServer(grpcConfig server.ServerConfig, service service.UserService) Server {
+	return Server{desc.UnimplementedUserV1Server{}, grpcConfig, nil, service}
 }
 
 // GetUser возвращает информацию о пользователе.
 func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
-	var id int64
-	var role, name, email string
-	var createdAt time.Time
-	var updatedAt sql.NullTime
-
-	pool := s.postgreSQL.GetPool()
-
-	row := pool.QueryRow(ctx, "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1", req.GetId())
-
-	err := row.Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
+	user, err := s.service.GetUser(ctx, req.GetId())
 	if err != nil {
-		fmt.Printf("failed to get user: %v", err)
+		log.Printf("failed to get user Server.GetUser || error: %v", err)
 		return nil, err
 	}
 
-	return &desc.GetUserResponse{
-		User: &desc.User{
-			Id:        id,
-			Name:      name,
-			Email:     email,
-			Role:      desc.Role(desc.Role_value[role]),
-			CreatedAt: timestamppb.New(createdAt),
-			UpdatedAt: timestamppb.New(updatedAt.Time),
-		},
-	}, nil
+	res := user.To()
+
+	return &res, nil
 }
 
 // CreateUser создает нового пользователя.
 func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
-	var id int64
-
-	if req.User.Password != req.User.PasswordConfirm {
-		return nil, fmt.Errorf("password and password_confirm must be the same")
-	}
-
-	hashPassword, err := s.hashPassword(req.User.Password)
+	serviceResponse, err := s.service.CreateUser(ctx, service.CreateUserRequest{
+		Name:            req.User.Name,
+		Email:           req.User.Email,
+		Password:        req.User.Password,
+		PasswordConfirm: req.User.PasswordConfirm,
+		Role:            req.User.Role,
+	})
 	if err != nil {
-		log.Printf("failed to get hash for password || err: %v", err)
-		return nil, fmt.Errorf("internal error")
-	}
-
-	pool := s.postgreSQL.GetPool()
-
-	err = pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
-		req.User.Name, req.User.Email, hashPassword, req.User.GetRole().String()).Scan(&id)
-	if err != nil {
-		fmt.Printf("failed to insert user: %v", err)
+		log.Printf("failed to create new user Server.CreateUser error || %v", err)
 		return nil, err
 	}
 
-	return &desc.CreateUserResponse{Id: id}, nil
-}
+	res := serviceResponse.To()
 
-func (s *Server) hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	return &res, nil
 }
 
 // UpdateUser обновляет данные о пользователе.
 func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*emptypb.Empty, error) {
-	var name sql.NullString
-	var role sql.NullString
-
-	pool := s.postgreSQL.GetPool()
-
-	if req.User.GetName().GetValue() != "" {
-		name = sql.NullString{String: req.User.GetName().GetValue(), Valid: true}
-	}
-
-	if req.GetUser().GetRole().Number() != 0 {
-		role = sql.NullString{String: req.GetUser().GetRole().String(), Valid: true}
-	}
-
-	_, err := pool.Exec(ctx, "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role)", name, role)
+	err := s.service.UpdateUser(ctx, service.UpdateUserRequest{
+		Name: req.User.Name.GetValue(),
+		ID:   req.User.Id,
+		Role: req.User.Role,
+	})
 	if err != nil {
-		fmt.Printf("failed to update user: %v", err)
+		log.Printf("failed to update user Server.UpdateUser || error: %v", err)
 		return nil, err
 	}
 
@@ -118,11 +76,9 @@ func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*
 
 // DeleteUser удаляет пользователя.
 func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
-	pool := s.postgreSQL.GetPool()
-
-	_, err := pool.Exec(ctx, "DELETE FROM USERS WHERE id = $1", req.Id)
+	err := s.service.DeleteUser(ctx, req.Id)
 	if err != nil {
-		fmt.Printf("failed to delete user: %v", err)
+		log.Printf("failed to delete user Server.DeleteUser || error: %v", err)
 		return nil, err
 	}
 

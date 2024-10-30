@@ -20,14 +20,12 @@ func (s *userServiceImpl) UpdateUser(ctx context.Context, request service.Update
 	err := s.userRepository.UpdateUser(ctx, repository.UpdateUserRequest{
 		ID:   request.ID,
 		Name: name,
-		Role: request.Role,
+		Role: request.Role.String(),
 	})
-
 	if err != nil {
 		log.Printf("failed to update user userServiceImpl.UpdateUser || err: %v", err)
 		return err
 	}
 
 	return nil
-
 }

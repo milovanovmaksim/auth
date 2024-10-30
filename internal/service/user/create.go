@@ -24,7 +24,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 		Name:         request.Name,
 		Email:        request.Email,
 		HashPassword: hashPassword,
-		Role:         request.Role,
+		Role:         request.Role.String(),
 	})
 	if err != nil {
 		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)

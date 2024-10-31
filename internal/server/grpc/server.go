@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/milovanovmaksim/auth/internal/closer"
 	"github.com/milovanovmaksim/auth/internal/server"
 	"github.com/milovanovmaksim/auth/internal/service"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
@@ -93,6 +94,8 @@ func (s *Server) Start() error {
 		return err
 	}
 
+	closer.Add(lis.Close)
+
 	s.grpcServer = grpc.NewServer()
 
 	reflection.Register(s.grpcServer)
@@ -104,14 +107,10 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	defer s.grpcServer.Stop()
+	closer.Add(func() error {
+		s.grpcServer.Stop()
+		return nil
+	})
 
 	return nil
-}
-
-// Stop остановка сервера.
-func (s *Server) Stop() {
-	if s.grpcServer != nil {
-		s.grpcServer.Stop()
-	}
 }

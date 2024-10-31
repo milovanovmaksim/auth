@@ -6,6 +6,7 @@ import (
 
 	"github.com/milovanovmaksim/auth/internal/client/database"
 	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
+	"github.com/milovanovmaksim/auth/internal/closer"
 	"github.com/milovanovmaksim/auth/internal/repository"
 	userRepo "github.com/milovanovmaksim/auth/internal/repository/user"
 	"github.com/milovanovmaksim/auth/internal/server"
@@ -76,6 +77,11 @@ func (di *diContainer) PostgreSQL(ctx context.Context) *postgresql.PostgreSQL {
 		}
 
 		di.pgSQL = pgSQL
+
+		closer.Add(func() error {
+			di.pgSQL.Close()
+			return nil
+		})
 	}
 
 	return di.pgSQL

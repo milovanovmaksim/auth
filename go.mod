@@ -21,6 +21,7 @@ require (
 )
 
 require (
+	github.com/georgysavva/scany v1.2.2
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/net v0.28.0 // indirect

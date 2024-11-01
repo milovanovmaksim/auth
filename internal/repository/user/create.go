@@ -4,16 +4,16 @@ import (
 	"context"
 	"log"
 
+	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
 	repo "github.com/milovanovmaksim/auth/internal/repository"
 )
 
 func (r *userRepositoryImpl) CreateUser(ctx context.Context, request repo.CreateUserRequest) (*repo.CreateUserResponse, error) {
 	var response repo.CreateUserResponse
 
-	pool := r.pgSQL.GetPool()
+	query := postgresql.Query{Name: "Create user", QueryRow: "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id"}
 
-	err := pool.QueryRow(ctx, "INSERT INTO users (username, email, password, role) VALUES($1, $2, $3, $4) returning id",
-		request.Name, request.Email, request.HashPassword, request.Role).Scan(&response.ID)
+	err := r.pgSQL.ScanOneContext(ctx, response, query, request.Name, request.Email, request.HashPassword, request.Role)
 	if err != nil {
 		log.Printf("failed to insert user userRepositoryImpl.CreateUser || err: %v", err)
 		return nil, err

@@ -23,8 +23,8 @@ type diContainer struct {
 	grpcConfig     server.ServerConfig
 }
 
-func newDiContainer() *diContainer {
-	return &diContainer{}
+func newDiContainer() diContainer {
+	return diContainer{}
 }
 
 func (di *diContainer) UserRepository(ctx context.Context) repository.UserRepository {

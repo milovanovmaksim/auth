@@ -6,9 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/milovanovmaksim/auth/cmd/auth_server"
-	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
-	grpcConfig "github.com/milovanovmaksim/auth/internal/config"
+	"github.com/milovanovmaksim/auth/internal/app"
 )
 
 func main() {
@@ -18,29 +16,10 @@ func main() {
 	}
 
 	ctx := context.Background()
+	app, err := app.NewApp(ctx)
 
-	dbConfig, err := postgresql.NewConfigFromEnv()
+	err = app.Run()
 	if err != nil {
-		log.Fatalf("failed to load config || err: %v", err)
+		log.Fatalf("failed to run app: %s", err.Error())
 	}
-
-	grpcConfig, err := grpcConfig.NewGrpcConfigFromEnv()
-	if err != nil {
-		log.Fatalf("failed to load grpc config || err: %v", err)
-	}
-
-	postgreSQL, err := postgresql.Connect(ctx, dbConfig)
-	if err != nil {
-		log.Fatalf("failed to connect to PostgreSQL || err: %v", err)
-	}
-
-	defer postgreSQL.Close()
-
-	server := auth_server.NewServer(postgreSQL, grpcConfig)
-	err = server.Start()
-	if err != nil {
-		log.Fatalf("failed to start a server || err: %v", err)
-	}
-
-	defer server.Stop()
 }

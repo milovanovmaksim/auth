@@ -8,12 +8,12 @@ import (
 )
 
 type GetUserResponse struct {
-	ID        int64
-	Name      string
-	Email     string
-	Role      desc.Role
-	CreatedAt time.Time
-	UpdatedAt sql.NullTime
+	ID        int64        `db:"id"`
+	Name      string       `db:"username"`
+	Email     string       `db:"email"`
+	Role      desc.Role    `db:"role"`
+	CreatedAt time.Time    `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
 type CreateUserResponse struct {

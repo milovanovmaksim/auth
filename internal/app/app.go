@@ -21,8 +21,6 @@ func NewApp(ctx context.Context) (*App, error) {
 	}
 
 	return app, nil
-	
-	
 }
 
 func (a *App) Run() error {

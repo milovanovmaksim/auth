@@ -4,16 +4,16 @@ import (
 	"context"
 	"log"
 
-	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
+	"github.com/milovanovmaksim/auth/internal/client/database"
 	repo "github.com/milovanovmaksim/auth/internal/repository"
 )
 
 func (s *userRepositoryImpl) GetUser(ctx context.Context, request int64) (*repo.GetUserResponse, error) {
 	var user repo.GetUserResponse
 
-	query := postgresql.Query{Name: "Get user", QueryRow: "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1"}
+	query := database.Query{Name: "Get user", QueryRow: "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1"}
 
-	err := s.pgSQL.ScanOneContext(ctx, &user, query, request)
+	err := s.db.DB().ScanOneContext(ctx, &user, query, request)
 	if err != nil {
 		log.Printf("failed to get user from db || err: %v", err)
 		return nil, err

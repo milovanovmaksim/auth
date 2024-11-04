@@ -4,13 +4,13 @@ import (
 	"context"
 	"log"
 
-	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
+	"github.com/milovanovmaksim/auth/internal/client/database"
 )
 
 func (s *userRepositoryImpl) DeleteUser(ctx context.Context, request int64) error {
-	query := postgresql.Query{Name: "Delete user", QueryRow: "DELETE FROM USERS WHERE id = $1"}
+	query := database.Query{Name: "Delete user", QueryRow: "DELETE FROM USERS WHERE id = $1"}
 
-	_, err := s.pgSQL.ExecContext(ctx, query, request)
+	_, err := s.db.DB().ExecContext(ctx, query, request)
 	if err != nil {
 		log.Printf("failed to delete user userRepositoryImpl.DeleteUser || err: %v", err)
 		return err

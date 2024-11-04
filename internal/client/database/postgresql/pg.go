@@ -40,21 +40,21 @@ func (p *PostgreSQL) Ping(ctx context.Context) error {
 	return p.Pool.Ping(ctx)
 }
 
-func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q Query, args ...interface{}) error {
+func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
 	row := p.QueryRowContext(ctx, q, args...)
 
 	return row.Scan(dest)
 }
 
-func (p *PostgreSQL) QueryContext(ctx context.Context, q Query, args ...interface{}) (pgx.Rows, error) {
+func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ...interface{}) (pgx.Rows, error) {
 	return p.Pool.Query(ctx, q.QueryRow, args...)
 }
 
-func (p *PostgreSQL) QueryRowContext(ctx context.Context, q Query, args ...interface{}) pgx.Row {
+func (p *PostgreSQL) QueryRowContext(ctx context.Context, q database.Query, args ...interface{}) pgx.Row {
 	return p.Pool.QueryRow(ctx, q.QueryRow, args...)
 }
 
-func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q Query, args ...interface{}) error {
+func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
 	rows, err := p.QueryContext(ctx, q, args...)
 	if err != nil {
 		return err
@@ -62,6 +62,6 @@ func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q Que
 	return pgxscan.ScanAll(dest, rows)
 }
 
-func (p *PostgreSQL) ExecContext(ctx context.Context, q Query, args ...interface{}) (pgconn.CommandTag, error) {
+func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...interface{}) (pgconn.CommandTag, error) {
 	return p.Pool.Exec(ctx, q.QueryRow, args...)
 }

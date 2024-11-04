@@ -18,7 +18,7 @@ import (
 type diContainer struct {
 	userRepository repository.UserRepository
 	userService    service.UserService
-	pgSQL          *postgresql.PostgreSQL
+	dbClient       database.Client
 	pgConfig       database.DBConfig
 	grpcConfig     server.ServerConfig
 }
@@ -29,7 +29,7 @@ func newDiContainer() diContainer {
 
 func (di *diContainer) UserRepository(ctx context.Context) repository.UserRepository {
 	if di.userRepository == nil {
-		di.userRepository = userRepo.NewUserRepository(*di.PostgreSQL(ctx))
+		di.userRepository = userRepo.NewUserRepository(di.DBClient(ctx))
 	}
 
 	return di.userRepository
@@ -43,7 +43,7 @@ func (di *diContainer) UserService(ctx context.Context) service.UserService {
 	return di.userService
 }
 
-func (di *diContainer) PGConfig() database.DBConfig {
+func (di *diContainer) DBConfig() database.DBConfig {
 	if di.pgConfig == nil {
 		config, err := postgresql.NewConfigFromEnv()
 		if err != nil {
@@ -69,20 +69,21 @@ func (di *diContainer) GRPCConfig() server.ServerConfig {
 	return di.grpcConfig
 }
 
-func (di *diContainer) PostgreSQL(ctx context.Context) *postgresql.PostgreSQL {
-	if di.pgSQL == nil {
-		pgSQL, err := postgresql.Connect(ctx, di.PGConfig())
+func (di *diContainer) DBClient(ctx context.Context) database.Client {
+	if di.dbClient == nil {
+		pg, err := postgresql.Connect(ctx, di.DBConfig())
 		if err != nil {
 			log.Fatalf("failed to connect to PostgreSQL server")
 		}
 
-		di.pgSQL = pgSQL
+		dbClient := postgresql.New(pg)
+		di.dbClient = dbClient
 
 		closer.Add(func() error {
-			di.pgSQL.Close()
+			di.dbClient.Close()
 			return nil
 		})
 	}
 
-	return di.pgSQL
+	return di.dbClient
 }

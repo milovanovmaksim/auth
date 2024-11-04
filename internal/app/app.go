@@ -33,8 +33,16 @@ func (a *App) Run() error {
 }
 
 func (a *App) initDeps(ctx context.Context) error {
-	a.initGRPCServer(ctx)
-	a.initdiContainer()
+	inits := []func(context.Context) error{
+		a.initGRPCServer,
+		a.initdiContainer,
+	}
+	for _, f := range inits {
+		err := f(ctx)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -45,7 +53,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	return nil
 }
 
-func (a *App) initdiContainer() error {
+func (a *App) initdiContainer(_ context.Context) error {
 	a.diConteiner = newDiContainer()
 
 	return nil

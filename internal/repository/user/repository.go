@@ -1,14 +1,14 @@
 package user
 
 import (
-	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
+	"github.com/milovanovmaksim/auth/internal/client/database"
 	"github.com/milovanovmaksim/auth/internal/repository"
 )
 
 type userRepositoryImpl struct {
-	pgSQL postgresql.PostgreSQL
+	db database.Client
 }
 
-func NewUserRepository(pgSQL postgresql.PostgreSQL) repository.UserRepository {
-	return &userRepositoryImpl{pgSQL}
+func NewUserRepository(db database.Client) repository.UserRepository {
+	return &userRepositoryImpl{db}
 }

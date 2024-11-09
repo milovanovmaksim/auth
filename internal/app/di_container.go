@@ -6,6 +6,7 @@ import (
 
 	"github.com/milovanovmaksim/auth/internal/client/database"
 	"github.com/milovanovmaksim/auth/internal/client/database/postgresql"
+	"github.com/milovanovmaksim/auth/internal/client/database/transaction"
 	"github.com/milovanovmaksim/auth/internal/closer"
 	"github.com/milovanovmaksim/auth/internal/repository"
 	userRepo "github.com/milovanovmaksim/auth/internal/repository/user"
@@ -21,6 +22,7 @@ type diContainer struct {
 	dbClient       database.Client
 	pgConfig       database.DBConfig
 	grpcConfig     server.ServerConfig
+	txManager      database.TxManager
 }
 
 func newDiContainer() diContainer {
@@ -76,7 +78,7 @@ func (di *diContainer) DBClient(ctx context.Context) database.Client {
 			log.Fatalf("failed to connect to PostgreSQL server")
 		}
 
-		dbClient := postgresql.New(pg)
+		dbClient := postgresql.NewClient(pg)
 		di.dbClient = dbClient
 
 		closer.Add(func() error {
@@ -86,4 +88,12 @@ func (di *diContainer) DBClient(ctx context.Context) database.Client {
 	}
 
 	return di.dbClient
+}
+
+func (di *diContainer) TxManager(ctx context.Context) database.TxManager {
+	if di.txManager == nil {
+		di.txManager = transaction.NewTransactionManager(di.DBClient(ctx).DB())
+	}
+
+	return di.txManager
 }

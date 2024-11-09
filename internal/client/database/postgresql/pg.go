@@ -2,12 +2,15 @@ package postgresql
 
 import (
 	"context"
+	"fmt"
+	"log"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/milovanovmaksim/auth/internal/client/database"
+	"github.com/milovanovmaksim/auth/internal/client/database/prettier"
 )
 
 type key string
@@ -53,6 +56,8 @@ func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q dat
 }
 
 func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ...interface{}) (pgx.Rows, error) {
+	logQuery(ctx, q, args...)
+
 	tx, ok := ctx.Value(TxKey).(pgx.Tx)
 	if ok {
 		return tx.Query(ctx, q.QueryRaw, args...)
@@ -62,6 +67,8 @@ func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ..
 }
 
 func (p *PostgreSQL) QueryRowContext(ctx context.Context, q database.Query, args ...interface{}) pgx.Row {
+	logQuery(ctx, q, args...)
+
 	tx, ok := ctx.Value(TxKey).(pgx.Tx)
 	if ok {
 		return tx.QueryRow(ctx, q.QueryRaw, args...)
@@ -79,6 +86,8 @@ func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q dat
 }
 
 func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...interface{}) (pgconn.CommandTag, error) {
+	logQuery(ctx, q, args...)
+
 	tx, ok := ctx.Value(TxKey).(pgx.Tx)
 	if ok {
 		return tx.Exec(ctx, q.QueryRaw, args...)
@@ -92,4 +101,13 @@ func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.
 
 func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, TxKey, tx)
+}
+
+func logQuery(ctx context.Context, q database.Query, args ...interface{}) {
+	prettyQuery := prettier.Pretty(q.QueryRaw, prettier.PlaceholderDollar, args...)
+	log.Println(
+		ctx,
+		fmt.Sprintf("sql: %s", q.Name),
+		fmt.Sprintf("query: %s", prettyQuery),
+	)
 }

@@ -23,6 +23,7 @@ func NewTransactionManager(db database.Transactor) database.TxManager {
 
 // transaction основная функция, которая выполняет указанный пользователем обработчик в транзакции
 func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn database.Handler) (err error) {
+	// Если это вложенная транзакция, пропускаем инициацию новой транзакции и выполняем обработчик.
 	tx, ok := ctx.Value(postgresql.TxKey).(pgx.Tx)
 	if ok {
 		return fn(ctx)
@@ -65,6 +66,7 @@ func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn databa
 
 }
 
+// ReadCommitted выполняет транзакцию с уровнем изоляции Read committed.
 func (m *manager) ReadCommitted(ctx context.Context, f database.Handler) error {
 	txOpts := pgx.TxOptions{IsoLevel: pgx.ReadCommitted}
 	return m.transaction(ctx, txOpts, f)

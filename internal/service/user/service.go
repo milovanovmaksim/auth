@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/milovanovmaksim/auth/internal/client/database"
 	"github.com/milovanovmaksim/auth/internal/repository"
 	"github.com/milovanovmaksim/auth/internal/service"
 	"golang.org/x/crypto/bcrypt"
@@ -8,6 +9,7 @@ import (
 
 type userServiceImpl struct {
 	userRepository repository.UserRepository
+	txManager      database.TxManager
 }
 
 func (s *userServiceImpl) hashPassword(password string) (string, error) {
@@ -15,6 +17,6 @@ func (s *userServiceImpl) hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func NewUserService(userRepository repository.UserRepository) service.UserService {
-	return &userServiceImpl{userRepository}
+func NewUserService(userRepository repository.UserRepository, txManager database.TxManager) service.UserService {
+	return &userServiceImpl{userRepository, txManager}
 }

@@ -39,7 +39,7 @@ func (di *diContainer) UserRepository(ctx context.Context) repository.UserReposi
 
 func (di *diContainer) UserService(ctx context.Context) service.UserService {
 	if di.userService == nil {
-		di.userService = userService.NewUserService(di.UserRepository(ctx))
+		di.userService = userService.NewUserService(di.UserRepository(ctx), di.TxManager(ctx))
 	}
 
 	return di.userService

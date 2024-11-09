@@ -2,5 +2,5 @@ package database
 
 type Query struct {
 	Name     string
-	QueryRow string
+	QueryRaw string
 }

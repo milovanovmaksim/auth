@@ -36,7 +36,7 @@ func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.G
 		return nil, err
 	}
 
-	res := user.To()
+	res := user.Into()
 
 	return &res, nil
 }
@@ -55,7 +55,7 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 		return nil, err
 	}
 
-	res := serviceResponse.To()
+	res := serviceResponse.Into()
 
 	return &res, nil
 }

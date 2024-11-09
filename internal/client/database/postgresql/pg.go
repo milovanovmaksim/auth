@@ -75,3 +75,7 @@ func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...
 func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {
 	return p.Pool.BeginTx(ctx, txOptions)
 }
+
+func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
+	return context.WithValue(ctx, TxKey, tx)
+}

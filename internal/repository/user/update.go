@@ -9,7 +9,7 @@ import (
 )
 
 func (s *userRepositoryImpl) UpdateUser(ctx context.Context, request repository.UpdateUserRequest) error {
-	query := database.Query{Name: "Update user", QueryRow: "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role), WHERE id = $3"}
+	query := database.Query{Name: "Update user", QueryRaw: "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role), WHERE id = $3"}
 
 	_, err := s.db.DB().ExecContext(ctx, query, request.Name, request.Role, request.ID)
 	if err != nil {

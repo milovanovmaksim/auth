@@ -11,7 +11,7 @@ import (
 func (s *userRepositoryImpl) GetUser(ctx context.Context, request int64) (*repo.GetUserResponse, error) {
 	var user repo.GetUserResponse
 
-	query := database.Query{Name: "Get user", QueryRow: "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1"}
+	query := database.Query{Name: "Get user", QueryRaw: "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = $1"}
 
 	err := s.db.DB().ScanOneContext(ctx, &user, query, request)
 	if err != nil {

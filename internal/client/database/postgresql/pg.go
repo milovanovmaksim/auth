@@ -53,11 +53,21 @@ func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q dat
 }
 
 func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ...interface{}) (pgx.Rows, error) {
-	return p.Pool.Query(ctx, q.QueryRow, args...)
+	tx, ok := ctx.Value(TxKey).(pgx.Tx)
+	if ok {
+		return tx.Query(ctx, q.QueryRaw, args...)
+	}
+
+	return p.Pool.Query(ctx, q.QueryRaw, args...)
 }
 
 func (p *PostgreSQL) QueryRowContext(ctx context.Context, q database.Query, args ...interface{}) pgx.Row {
-	return p.Pool.QueryRow(ctx, q.QueryRow, args...)
+	tx, ok := ctx.Value(TxKey).(pgx.Tx)
+	if ok {
+		return tx.QueryRow(ctx, q.QueryRaw, args...)
+	}
+
+	return p.Pool.QueryRow(ctx, q.QueryRaw, args...)
 }
 
 func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
@@ -69,7 +79,11 @@ func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q dat
 }
 
 func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...interface{}) (pgconn.CommandTag, error) {
-	return p.Pool.Exec(ctx, q.QueryRow, args...)
+	tx, ok := ctx.Value(TxKey).(pgx.Tx)
+	if ok {
+		return tx.Exec(ctx, q.QueryRaw, args...)
+	}
+	return p.Pool.Exec(ctx, q.QueryRaw, args...)
 }
 
 func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {

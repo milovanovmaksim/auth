@@ -8,7 +8,7 @@ import (
 )
 
 func (s *userRepositoryImpl) DeleteUser(ctx context.Context, request int64) error {
-	query := database.Query{Name: "Delete user", QueryRow: "DELETE FROM USERS WHERE id = $1"}
+	query := database.Query{Name: "Delete user", QueryRaw: "DELETE FROM USERS WHERE id = $1"}
 
 	_, err := s.db.DB().ExecContext(ctx, query, request)
 	if err != nil {

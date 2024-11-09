@@ -10,6 +10,12 @@ import (
 	"github.com/milovanovmaksim/auth/internal/client/database"
 )
 
+type key string
+
+const (
+	TxKey key = "tx"
+)
+
 // PostgreSQL представляет базу данных PostgreSQL.
 type PostgreSQL struct {
 	Pool *pgxpool.Pool
@@ -64,4 +70,8 @@ func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q dat
 
 func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...interface{}) (pgconn.CommandTag, error) {
 	return p.Pool.Exec(ctx, q.QueryRow, args...)
+}
+
+func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {
+	return p.Pool.BeginTx(ctx, txOptions)
 }

@@ -31,7 +31,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 		return nil, err
 	}
 
-	return &service.CreateUserResponse{
-		ID: user.ID,
-	}, nil
+	res := user.Into()
+
+	return &res, nil
 }

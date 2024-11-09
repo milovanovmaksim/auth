@@ -14,12 +14,7 @@ func (s *userServiceImpl) GetUser(ctx context.Context, request int64) (*service.
 		return nil, err
 	}
 
-	return &service.GetUserResponse{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}, nil
+	res := user.Into()
+
+	return &res, nil
 }

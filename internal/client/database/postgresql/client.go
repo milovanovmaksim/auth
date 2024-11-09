@@ -12,7 +12,7 @@ func (c *pgClient) DB() database.DB {
 	return c.pg
 }
 
-func New(pg database.DB) database.Client {
+func NewClient(pg database.DB) database.Client {
 	return &pgClient{pg}
 }
 

@@ -29,6 +29,7 @@ func newDiContainer() diContainer {
 	return diContainer{}
 }
 
+// UserRepository врозвращает объект, удовлетворяющий интерфейсу repository.UserRepository.
 func (di *diContainer) UserRepository(ctx context.Context) repository.UserRepository {
 	if di.userRepository == nil {
 		di.userRepository = userRepo.NewUserRepository(di.DBClient(ctx))
@@ -37,6 +38,7 @@ func (di *diContainer) UserRepository(ctx context.Context) repository.UserReposi
 	return di.userRepository
 }
 
+// UserService возврашщает объект, удовлетворяющий интерфейсу service.UserService.
 func (di *diContainer) UserService(ctx context.Context) service.UserService {
 	if di.userService == nil {
 		di.userService = userService.NewUserService(di.UserRepository(ctx), di.TxManager(ctx))
@@ -45,6 +47,7 @@ func (di *diContainer) UserService(ctx context.Context) service.UserService {
 	return di.userService
 }
 
+// DBConfig возвращает объект, удовлетворяющий интерфейсу database.DBConfig.
 func (di *diContainer) DBConfig() database.DBConfig {
 	if di.pgConfig == nil {
 		config, err := postgresql.NewConfigFromEnv()
@@ -58,6 +61,7 @@ func (di *diContainer) DBConfig() database.DBConfig {
 	return di.pgConfig
 }
 
+// GRPCConfig возвращает объект, удовлетворяющий интерфейсу server.ServerConfig.
 func (di *diContainer) GRPCConfig() server.ServerConfig {
 	if di.grpcConfig == nil {
 		cfg, err := grpc.NewGrpcConfigFromEnv()
@@ -71,6 +75,7 @@ func (di *diContainer) GRPCConfig() server.ServerConfig {
 	return di.grpcConfig
 }
 
+// DBClient возвращает объект, удовлетвoряющий интерфейсу database.Client.
 func (di *diContainer) DBClient(ctx context.Context) database.Client {
 	if di.dbClient == nil {
 		pg, err := postgresql.Connect(ctx, di.DBConfig())
@@ -90,6 +95,7 @@ func (di *diContainer) DBClient(ctx context.Context) database.Client {
 	return di.dbClient
 }
 
+// TxManager возвращает объект, удовлетвoряющий интерфейсу database.TxManager.
 func (di *diContainer) TxManager(ctx context.Context) database.TxManager {
 	if di.txManager == nil {
 		di.txManager = transaction.NewTransactionManager(di.DBClient(ctx).DB())

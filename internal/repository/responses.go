@@ -8,6 +8,7 @@ import (
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
+// GetUserResponse ответ на запрос о получении информации о пользователе.
 type GetUserResponse struct {
 	ID        int64        `db:"id"`
 	Name      string       `db:"username"`
@@ -17,6 +18,7 @@ type GetUserResponse struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+// Into преобоазует объект в service.GetUserResponse.
 func (u GetUserResponse) Into() service.GetUserResponse {
 	return service.GetUserResponse{
 		ID:        u.ID,
@@ -28,10 +30,12 @@ func (u GetUserResponse) Into() service.GetUserResponse {
 	}
 }
 
+// CreateUserResponse ответ на запрос о создании нового пользователя.
 type CreateUserResponse struct {
 	ID int64
 }
 
+// Into преобразует объект в service.CreateUserResponse.
 func (u CreateUserResponse) Into() service.CreateUserResponse {
 	return service.CreateUserResponse{ID: u.ID}
 }

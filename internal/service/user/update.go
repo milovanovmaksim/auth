@@ -9,6 +9,7 @@ import (
 	"github.com/milovanovmaksim/auth/internal/service"
 )
 
+// UpdateUser обновляет данные о пользователе.
 func (s *userServiceImpl) UpdateUser(ctx context.Context, request service.UpdateUserRequest) error {
 	name := sql.NullString{String: "", Valid: false}
 

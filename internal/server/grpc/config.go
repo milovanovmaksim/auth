@@ -11,7 +11,7 @@ const (
 	grpcHost = "GRPC_HOST"
 )
 
-// GrpcConfig содержит настройки grpc сервера.
+// GrpcConfig представляет настройки grpc сервера.
 type GrpcConfig struct {
 	port string
 	host string
@@ -42,10 +42,12 @@ func (cfg *GrpcConfig) Address() string {
 	return net.JoinHostPort(cfg.Host(), cfg.Port())
 }
 
+// Host возвращает имя хоста grpc сервера.
 func (cfg *GrpcConfig) Host() string {
 	return cfg.host
 }
 
+// Port возвращает порт grpc сервера.
 func (cfg *GrpcConfig) Port() string {
 	return cfg.port
 }

@@ -17,6 +17,7 @@ func (s *userServiceImpl) hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
+// NewUserService создает новый объект, удовлетворяющий интерфейсу service.UserService.
 func NewUserService(userRepository repository.UserRepository, txManager database.TxManager) service.UserService {
 	return &userServiceImpl{userRepository, txManager}
 }

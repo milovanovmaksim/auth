@@ -9,6 +9,7 @@ import (
 	"github.com/milovanovmaksim/auth/internal/service"
 )
 
+// CreateUser создает новго пользователя.
 func (s *userServiceImpl) CreateUser(ctx context.Context, request service.CreateUserRequest) (*service.CreateUserResponse, error) {
 	if request.Password != request.PasswordConfirm {
 		return nil, fmt.Errorf("password and password_confirm must be the same")

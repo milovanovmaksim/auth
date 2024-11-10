@@ -8,6 +8,7 @@ import (
 	"github.com/milovanovmaksim/auth/internal/repository"
 )
 
+// UpdateUser обновление данных пользователя.
 func (s *userRepositoryImpl) UpdateUser(ctx context.Context, request repository.UpdateUserRequest) error {
 	query := database.Query{Name: "Update user", QueryRaw: "UPDATE users SET username = COALESCE($1, username), role = COALESCE($2, role), WHERE id = $3"}
 

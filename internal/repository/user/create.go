@@ -8,6 +8,7 @@ import (
 	repo "github.com/milovanovmaksim/auth/internal/repository"
 )
 
+// CreateUser создает нового пользователя.
 func (r *userRepositoryImpl) CreateUser(ctx context.Context, request repo.CreateUserRequest) (*repo.CreateUserResponse, error) {
 	var response repo.CreateUserResponse
 

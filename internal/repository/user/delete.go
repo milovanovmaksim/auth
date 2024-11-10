@@ -7,6 +7,7 @@ import (
 	"github.com/milovanovmaksim/auth/internal/client/database"
 )
 
+// DeleteUser удаляет пользователя из БД.:w
 func (s *userRepositoryImpl) DeleteUser(ctx context.Context, request int64) error {
 	query := database.Query{Name: "Delete user", QueryRaw: "DELETE FROM USERS WHERE id = $1"}
 

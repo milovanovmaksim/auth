@@ -8,6 +8,7 @@ import (
 	repo "github.com/milovanovmaksim/auth/internal/repository"
 )
 
+// GetUser возвращает данные пользователя по его id.
 func (s *userRepositoryImpl) GetUser(ctx context.Context, request int64) (*repo.GetUserResponse, error) {
 	var user repo.GetUserResponse
 

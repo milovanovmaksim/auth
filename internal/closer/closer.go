@@ -7,23 +7,24 @@ import (
 	"sync"
 )
 
-var globalCloser = New()
+var globalCloser = NewCloser()
 
-// Add adds `func() error` callback to the globalCloser
+// Add добавляет функцию в Closer.
 func Add(f ...func() error) {
 	globalCloser.Add(f...)
 }
 
-// Wait ...
+// Wait ждет выполнение всех функций, добавленных в Closer.
 func Wait() {
 	globalCloser.Wait()
 }
 
-// CloseAll ...
+// CloseAll вызывает все функции, добавленные в Closer.
 func CloseAll() {
 	globalCloser.CloseAll()
 }
 
+// Closer используется для освобождения системных ресурсов (БД, сокеты, и.т.д.) при завершении работы приложения.
 type Closer struct {
 	mu    sync.Mutex
 	once  sync.Once
@@ -31,7 +32,8 @@ type Closer struct {
 	funcs []func() error
 }
 
-func New(sig ...os.Signal) *Closer {
+// NewCloser создает новый объект Closer.
+func NewCloser(sig ...os.Signal) *Closer {
 	c := &Closer{done: make(chan struct{})}
 	if len(sig) > 0 {
 		go func() {
@@ -46,10 +48,12 @@ func New(sig ...os.Signal) *Closer {
 	return c
 }
 
+// Wait ждет выполнение всех функций, добавленных в Closer.
 func (c *Closer) Wait() {
 	<-c.done
 }
 
+// CloseAll вызывает все функции, добавленные в Closer.
 func (c *Closer) CloseAll() {
 	c.once.Do(func() {
 		defer close(c.done)
@@ -74,6 +78,7 @@ func (c *Closer) CloseAll() {
 	})
 }
 
+// Add добавляет функцию в Closer.
 func (c *Closer) Add(f ...func() error) {
 	c.mu.Lock()
 	c.funcs = append(c.funcs, f...)

@@ -7,11 +7,14 @@ import (
 	"github.com/milovanovmaksim/auth/internal/server/grpc"
 )
 
+// App приложение для аутентификации пользователей.
 type App struct {
 	diConteiner diContainer
 	grpcServer  grpc.Server
 }
 
+
+// NeaApp создает новый объект App.
 func NewApp(ctx context.Context) (*App, error) {
 	app := &App{}
 
@@ -23,6 +26,8 @@ func NewApp(ctx context.Context) (*App, error) {
 	return app, nil
 }
 
+
+// Run запускает приложение.
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()

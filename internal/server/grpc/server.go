@@ -15,7 +15,7 @@ import (
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
-// Server - cервер аутентификации пользователя.
+// Server - cервер аутентификации пользователей.
 type Server struct {
 	desc.UnimplementedUserV1Server
 	grpcConfig server.ServerConfig

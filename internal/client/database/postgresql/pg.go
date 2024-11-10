@@ -45,16 +45,23 @@ func (p *PostgreSQL) Close() {
 	p.Pool.Close()
 }
 
+// Ping проверяет соединение с БД.
 func (p *PostgreSQL) Ping(ctx context.Context) error {
 	return p.Pool.Ping(ctx)
 }
 
+// ScanOneContext делегирует работу pgx.Row.Scan.
+// Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
+// удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
 	row := p.QueryRowContext(ctx, q, args...)
 
 	return row.Scan(dest)
 }
 
+// QueryContext делегирует работу (pgxpool.Pool).Query.
+// Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
+// удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ...interface{}) (pgx.Rows, error) {
 	logQuery(ctx, q, args...)
 
@@ -66,6 +73,9 @@ func (p *PostgreSQL) QueryContext(ctx context.Context, q database.Query, args ..
 	return p.Pool.Query(ctx, q.QueryRaw, args...)
 }
 
+// QueryRowContext делегирует работу (pgxpool.Pool).QueryRow.
+// Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
+// удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) QueryRowContext(ctx context.Context, q database.Query, args ...interface{}) pgx.Row {
 	logQuery(ctx, q, args...)
 
@@ -77,6 +87,9 @@ func (p *PostgreSQL) QueryRowContext(ctx context.Context, q database.Query, args
 	return p.Pool.QueryRow(ctx, q.QueryRaw, args...)
 }
 
+// ScanAllContext делегирует работу pgxscan.ScanAll.
+// Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
+// удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
 	rows, err := p.QueryContext(ctx, q, args...)
 	if err != nil {
@@ -85,6 +98,9 @@ func (p *PostgreSQL) ScanAllContext(ctx context.Context, dest interface{}, q dat
 	return pgxscan.ScanAll(dest, rows)
 }
 
+// ExecContext делегирует работу (pgxpool.Pool).Exec.
+// Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
+// удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...interface{}) (pgconn.CommandTag, error) {
 	logQuery(ctx, q, args...)
 
@@ -95,13 +111,17 @@ func (p *PostgreSQL) ExecContext(ctx context.Context, q database.Query, args ...
 	return p.Pool.Exec(ctx, q.QueryRaw, args...)
 }
 
+// BeginTx делегирует работу pgxpool.Pool.BeginTx.
+// Для подробной информации смотри (pgxpool.Pool).BeginTx.
 func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {
 	return p.Pool.BeginTx(ctx, txOptions)
 }
 
+// MakeContextTx возвращает копию родительского контекста с ключом postgresql.TxKey и значением pgx.Tx.
 func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, TxKey, tx)
 }
+
 
 func logQuery(ctx context.Context, q database.Query, args ...interface{}) {
 	prettyQuery := prettier.Pretty(q.QueryRaw, prettier.PlaceholderDollar, args...)

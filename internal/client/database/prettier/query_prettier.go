@@ -11,6 +11,7 @@ const (
 	PlaceholderQuestion = "?"
 )
 
+// Pretty возвращает строку, содержащую информацию о запросе к БД.
 func Pretty(query string, placeholder string, args ...any) string {
 	for i, param := range args {
 		var value string

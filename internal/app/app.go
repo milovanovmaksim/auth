@@ -9,10 +9,9 @@ import (
 
 // App приложение для аутентификации пользователей.
 type App struct {
-	diConteiner diContainer
+	diContainer diContainer
 	grpcServer  grpc.Server
 }
-
 
 // NeaApp создает новый объект App.
 func NewApp(ctx context.Context) (*App, error) {
@@ -25,7 +24,6 @@ func NewApp(ctx context.Context) (*App, error) {
 
 	return app, nil
 }
-
 
 // Run запускает приложение.
 func (a *App) Run() error {
@@ -53,13 +51,13 @@ func (a *App) initDeps(ctx context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(a.diConteiner.GRPCConfig(), a.diConteiner.UserService(ctx))
+	a.grpcServer = grpc.NewServer(a.diContainer.GRPCConfig(), a.diContainer.UserService(ctx))
 
 	return nil
 }
 
 func (a *App) initdiContainer(_ context.Context) error {
-	a.diConteiner = newDiContainer()
+	a.diContainer = newDiContainer()
 
 	return nil
 }

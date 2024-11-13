@@ -26,10 +26,10 @@ func CloseAll() {
 
 // Closer используется для освобождения системных ресурсов (БД, сокеты, и.т.д.) при завершении работы приложения.
 type Closer struct {
-	mu    sync.Mutex
-	once  sync.Once
 	done  chan struct{}
 	funcs []func() error
+	once  sync.Once
+	mu    sync.Mutex
 }
 
 // NewCloser создает новый объект Closer.

@@ -10,12 +10,12 @@ import (
 
 // GetUserResponse ответ на запрос о получении информации о пользователе.
 type GetUserResponse struct {
-	ID        int64        `db:"id"`
-	Name      string       `db:"username"`
-	Email     string       `db:"email"`
-	Role      desc.Role    `db:"role"`
 	CreatedAt time.Time    `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
+	Name      string       `db:"username"`
+	Email     string       `db:"email"`
+	ID        int64        `db:"id"`
+	Role      desc.Role    `db:"role"`
 }
 
 // Into преобоазует объект в service.GetUserResponse.

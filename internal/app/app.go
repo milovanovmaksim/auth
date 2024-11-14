@@ -16,7 +16,7 @@ type App struct {
 	envPath     string
 }
 
-// NeaApp создает новый объект App.
+// NewApp создает новый объект App.
 func NewApp(ctx context.Context, envPath string) (*App, error) {
 	app := &App{envPath: envPath}
 
@@ -50,6 +50,7 @@ func (a *App) initConfig(_ context.Context) error {
 
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
+		a.initConfig,
 		a.initGRPCServer,
 		a.initDiContainer,
 	}

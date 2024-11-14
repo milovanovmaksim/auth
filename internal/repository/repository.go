@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// UserRepository интерфейс, определяющий набор методов CRUD для работы с БД.
 type UserRepository interface {
 	CreateUser(ctx context.Context, request CreateUserRequest) (*CreateUserResponse, error)
 	GetUser(ctx context.Context, request int64) (*GetUserResponse, error)

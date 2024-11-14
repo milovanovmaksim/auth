@@ -11,18 +11,18 @@ const (
 	grpcHost = "GRPC_HOST"
 )
 
-// GrpcConfig представляет настройки grpc сервера.
-type GrpcConfig struct {
+// Config представляет настройки grpc сервера.
+type Config struct {
 	port string
 	host string
 }
 
-func newGrpcConfig(port string, host string) GrpcConfig {
-	return GrpcConfig{port, host}
+func newGrpcConfig(port string, host string) Config {
+	return Config{port, host}
 }
 
 // NewGrpcConfigFromEnv создает новый объект GrpcConfig из .env файла.
-func NewGrpcConfigFromEnv() (*GrpcConfig, error) {
+func NewGrpcConfigFromEnv() (*Config, error) {
 	port := os.Getenv(grpcPort)
 	if len(port) == 0 {
 		return nil, fmt.Errorf("%s must be set", grpcPort)
@@ -38,16 +38,16 @@ func NewGrpcConfigFromEnv() (*GrpcConfig, error) {
 }
 
 // Address возвращает адрес grpc сервера.
-func (cfg *GrpcConfig) Address() string {
+func (cfg *Config) Address() string {
 	return net.JoinHostPort(cfg.Host(), cfg.Port())
 }
 
 // Host возвращает имя хоста grpc сервера.
-func (cfg *GrpcConfig) Host() string {
+func (cfg *Config) Host() string {
 	return cfg.host
 }
 
 // Port возвращает порт grpc сервера.
-func (cfg *GrpcConfig) Port() string {
+func (cfg *Config) Port() string {
 	return cfg.port
 }

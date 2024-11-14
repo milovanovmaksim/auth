@@ -18,13 +18,13 @@ import (
 // Server - cервер аутентификации пользователей.
 type Server struct {
 	desc.UnimplementedUserV1Server
-	grpcConfig server.ServerConfig
+	grpcConfig server.Config
 	grpcServer *grpc.Server
 	service    service.UserService
 }
 
 // NewServer создает новый Server объект.
-func NewServer(grpcConfig server.ServerConfig, service service.UserService) Server {
+func NewServer(grpcConfig server.Config, service service.UserService) Server {
 	return Server{desc.UnimplementedUserV1Server{}, grpcConfig, nil, service}
 }
 

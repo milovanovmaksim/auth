@@ -1,7 +1,7 @@
 package server
 
-// ServerConfig интерфейс для работы с конфигурацией сервера.
-type ServerConfig interface {
+// Config интерфейс для работы с конфигурацией сервера.
+type Config interface {
 	Port() string
 	Host() string
 	Address() string

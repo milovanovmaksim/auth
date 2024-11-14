@@ -16,6 +16,7 @@ import (
 type key string
 
 const (
+	// TxKey имя ключа транзакции для передачи его в context.Context.
 	TxKey key = "tx"
 )
 
@@ -121,7 +122,6 @@ func (p *PostgreSQL) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.
 func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, TxKey, tx)
 }
-
 
 func logQuery(ctx context.Context, q database.Query, args ...interface{}) {
 	prettyQuery := prettier.Pretty(q.QueryRaw, prettier.PlaceholderDollar, args...)

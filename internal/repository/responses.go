@@ -15,7 +15,7 @@ type GetUserResponse struct {
 	Name      string       `db:"username"`
 	Email     string       `db:"email"`
 	ID        int64        `db:"id"`
-	Role      desc.Role    `db:"role"`
+	Role      string       `db:"role"`
 }
 
 // Into преобоазует объект в service.GetUserResponse.
@@ -24,7 +24,7 @@ func (u GetUserResponse) Into() service.GetUserResponse {
 		ID:        u.ID,
 		Name:      u.Name,
 		Email:     u.Email,
-		Role:      u.Role,
+		Role:      desc.Role(desc.Role_value[u.Role]),
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}
@@ -32,7 +32,7 @@ func (u GetUserResponse) Into() service.GetUserResponse {
 
 // CreateUserResponse ответ на запрос о создании нового пользователя.
 type CreateUserResponse struct {
-	ID int64
+	ID int64 `db:"id"`
 }
 
 // Into преобразует объект в service.CreateUserResponse.

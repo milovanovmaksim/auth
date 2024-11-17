@@ -51,13 +51,16 @@ func (p *PostgreSQL) Ping(ctx context.Context) error {
 	return p.Pool.Ping(ctx)
 }
 
-// ScanOneContext делегирует работу pgx.Row.Scan.
+// ScanOneContext делегирует работу pgxscan.ScanOne.
 // Может быть использован в транзакциях при передачи контекста (context.Context) с ключом postgresql.TxKey и значением,
 // удовлетворяющем интерфейсу pgx.Tx.
 func (p *PostgreSQL) ScanOneContext(ctx context.Context, dest interface{}, q database.Query, args ...interface{}) error {
-	row := p.QueryRowContext(ctx, q, args...)
+	row, err := p.QueryContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
 
-	return row.Scan(dest)
+	return pgxscan.ScanOne(dest, row)
 }
 
 // QueryContext делегирует работу (pgxpool.Pool).Query.

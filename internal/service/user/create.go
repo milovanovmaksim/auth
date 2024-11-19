@@ -43,8 +43,13 @@ func checkPassword(request service.CreateUserRequest) error {
 	if request.Password == "" {
 		return errors.New("password is empty")
 	}
+
 	if request.Password != request.PasswordConfirm {
 		return errors.New("password and password_confirm must be the same")
+	}
+
+	if len(request.Password) <= 8 {
+		return errors.New("password must be more then 8 characters")
 	}
 
 	return nil

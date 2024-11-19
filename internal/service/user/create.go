@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -11,8 +12,10 @@ import (
 
 // CreateUser создает новго пользователя.
 func (s *userServiceImpl) CreateUser(ctx context.Context, request service.CreateUserRequest) (*service.CreateUserResponse, error) {
-	if request.Password != request.PasswordConfirm {
-		return nil, fmt.Errorf("password and password_confirm must be the same")
+	err := checkPassword(request)
+	if err != nil {
+		log.Printf("failed to create new user || error: %v", err)
+		return nil, err
 	}
 
 	hashPassword, err := s.hashPassword(request.Password)
@@ -21,12 +24,11 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 		return nil, fmt.Errorf("internal error")
 	}
 
-	user, err := s.userRepository.CreateUser(ctx, repo.CreateUserRequest{
-		Name:         request.Name,
-		Email:        request.Email,
-		HashPassword: hashPassword,
-		Role:         request.Role.String(),
-	})
+	user, err := s.userRepository.CreateUser(ctx, repo.NewCreateUserRequest(request.Name,
+		request.Email,
+		hashPassword,
+		request.Role.String(),
+	))
 	if err != nil {
 		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
 		return nil, err
@@ -35,4 +37,15 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request service.Create
 	res := user.Into()
 
 	return &res, nil
+}
+
+func checkPassword(request service.CreateUserRequest) error {
+	if request.Password == "" {
+		return errors.New("password is empty")
+	}
+	if request.Password != request.PasswordConfirm {
+		return errors.New("password and password_confirm must be the same")
+	}
+
+	return nil
 }

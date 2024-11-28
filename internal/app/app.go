@@ -41,7 +41,7 @@ func (a *App) Run() error {
 func (a *App) initConfig(_ context.Context) error {
 	err := godotenv.Load(a.envPath)
 	if err != nil {
-		log.Printf("failed to load config || err: %v", err)
+		log.Printf("failed to load config: %v", err)
 		return err
 	}
 

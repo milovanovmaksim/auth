@@ -52,7 +52,7 @@ func (di *diContainer) DBConfig() database.DBConfig {
 	if di.pgConfig == nil {
 		config, err := postgresql.NewConfigFromEnv()
 		if err != nil {
-			log.Fatalf("failed to get DB config || error: %v", err.Error())
+			log.Fatalf("failed to get DB config: %v", err.Error())
 		}
 
 		di.pgConfig = config
@@ -66,7 +66,7 @@ func (di *diContainer) GRPCConfig() server.Config {
 	if di.grpcConfig == nil {
 		cfg, err := grpc.NewGrpcConfigFromEnv()
 		if err != nil {
-			log.Fatalf("failed to get grpc config || error: %v", err.Error())
+			log.Fatalf("failed to get grpc config: %v", err.Error())
 		}
 
 		di.grpcConfig = cfg

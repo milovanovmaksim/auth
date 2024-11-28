@@ -12,6 +12,8 @@ import (
 	"github.com/milovanovmaksim/auth/internal/closer"
 	"github.com/milovanovmaksim/auth/internal/server"
 	"github.com/milovanovmaksim/auth/internal/service"
+	"github.com/milovanovmaksim/auth/internal/service/user/converter"
+	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
@@ -32,18 +34,18 @@ func NewServer(grpcConfig server.Config, service service.UserService) Server {
 func (s *Server) GetUser(ctx context.Context, req *desc.GetUserRequest) (*desc.GetUserResponse, error) {
 	user, err := s.service.GetUser(ctx, req.GetId())
 	if err != nil {
-		log.Printf("failed to get user Server.GetUser || error: %v", err)
+		log.Printf("failed to get user Server.GetUser: %v", err)
 		return nil, err
 	}
 
-	res := user.Into()
+	res := converter.ToDescFromGetUserResponse(*user)
 
 	return &res, nil
 }
 
 // CreateUser создает нового пользователя.
 func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*desc.CreateUserResponse, error) {
-	serviceResponse, err := s.service.CreateUser(ctx, service.CreateUserRequest{
+	userID, err := s.service.CreateUser(ctx, serviceModel.CreateUserRequest{
 		Name:            req.User.Name,
 		Email:           req.User.Email,
 		Password:        req.User.Password,
@@ -51,24 +53,29 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 		Role:            req.User.Role,
 	})
 	if err != nil {
-		log.Printf("failed to create new user Server.CreateUser error || %v", err)
+		log.Printf("failed to create new user Server.CreateUser: %v", err)
 		return nil, err
 	}
 
-	res := serviceResponse.Into()
 
-	return &res, nil
+	return &desc.CreateUserResponse{Id: userID}, nil
 }
 
 // UpdateUser обновляет данные о пользователе.
 func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*emptypb.Empty, error) {
-	err := s.service.UpdateUser(ctx, service.UpdateUserRequest{
-		Name: req.User.Name.GetValue(),
+	var name *string
+
+	if req.User.GetName() != nil {
+		name = &req.User.GetName().Value
+	}
+
+	err := s.service.UpdateUser(ctx, serviceModel.UpdateUserRequest{
+		Name: name,
 		ID:   req.User.Id,
 		Role: req.User.Role,
 	})
 	if err != nil {
-		log.Printf("failed to update user Server.UpdateUser || error: %v", err)
+		log.Printf("failed to update user Server.UpdateUser: %v", err)
 		return nil, err
 	}
 
@@ -79,7 +86,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *desc.UpdateUserRequest) (*
 func (s *Server) DeleteUser(ctx context.Context, req *desc.DeleteUserRequest) (*emptypb.Empty, error) {
 	err := s.service.DeleteUser(ctx, req.Id)
 	if err != nil {
-		log.Printf("failed to delete user Server.DeleteUser || error: %v", err)
+		log.Printf("failed to delete user Server.DeleteUser: %v", err)
 		return nil, err
 	}
 

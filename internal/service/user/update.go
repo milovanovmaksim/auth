@@ -2,29 +2,22 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
-	"github.com/milovanovmaksim/auth/internal/repository"
-	"github.com/milovanovmaksim/auth/internal/service"
+	"github.com/milovanovmaksim/auth/internal/service/user/model"
+	repoModel "github.com/milovanovmaksim/auth/internal/repository/user/model"
 )
 
 // UpdateUser обновляет данные о пользователе.
-func (s *userServiceImpl) UpdateUser(ctx context.Context, request service.UpdateUserRequest) error {
-	name := sql.NullString{String: "", Valid: false}
+func (s *userServiceImpl) UpdateUser(ctx context.Context, request model.UpdateUserRequest) error {
 
-	if request.Name != "" {
-		name.String = request.Name
-		name.Valid = true
-	}
-
-	err := s.userRepository.UpdateUser(ctx, repository.UpdateUserRequest{
+	err := s.userRepository.UpdateUser(ctx, repoModel.UpdateUserRequest{
 		ID:   request.ID,
-		Name: name,
+		Name: request.Name,
 		Role: request.Role.String(),
 	})
 	if err != nil {
-		log.Printf("failed to update user userServiceImpl.UpdateUser || err: %v", err)
+		log.Printf("failed to update user userServiceImpl.UpdateUser: %v", err)
 		return err
 	}
 

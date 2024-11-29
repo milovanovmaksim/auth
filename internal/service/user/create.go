@@ -24,17 +24,18 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request model.CreateUs
 		return 0, fmt.Errorf("internal error")
 	}
 
-	userId, err := s.userRepository.CreateUser(ctx, repoModel.CreateUserRequest{Name: request.Name,
-		Email: request.Email,
+	userID, err := s.userRepository.CreateUser(ctx, repoModel.CreateUserRequest{
+		Name:         request.Name,
+		Email:        request.Email,
 		HashPassword: hashPassword,
-		Role: request.Role.String(),
+		Role:         request.Role.String(),
 	})
 	if err != nil {
 		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
 		return 0, err
 	}
 
-	return userId, nil
+	return userID, nil
 }
 
 func checkPassword(request model.CreateUserRequest) error {

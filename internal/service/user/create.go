@@ -20,7 +20,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request serviceModel.C
 
 	hashPassword, err := s.hashPassword(request.Password)
 	if err != nil {
-		log.Printf("failed to get hash for password || err: %v", err)
+		log.Printf("failed to get hash for password: %v", err)
 		return 0, fmt.Errorf("internal error")
 	}
 
@@ -31,7 +31,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request serviceModel.C
 		Role:         request.Role.String(),
 	})
 	if err != nil {
-		log.Printf("failed to cretae user userServiceImpl.CreateUser || err: %v", err)
+		log.Printf("failed to cretae user userServiceImpl.CreateUser: %v", err)
 		return 0, err
 	}
 
@@ -63,7 +63,7 @@ func checkName(request serviceModel.CreateUserRequest) error {
 
 func checkEmail(request serviceModel.CreateUserRequest) error {
 	if request.Email == "" {
-		return service.ValidationError{String: "fieal 'Email' is empty"}
+		return service.ValidationError{String: "field 'Email' is empty"}
 	}
 
 	return nil

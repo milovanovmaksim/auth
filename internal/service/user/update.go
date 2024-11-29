@@ -5,11 +5,11 @@ import (
 	"log"
 
 	repoModel "github.com/milovanovmaksim/auth/internal/repository/user/model"
-	"github.com/milovanovmaksim/auth/internal/service/user/model"
+	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 )
 
 // UpdateUser обновляет данные о пользователе.
-func (s *userServiceImpl) UpdateUser(ctx context.Context, request model.UpdateUserRequest) error {
+func (s *userServiceImpl) UpdateUser(ctx context.Context, request serviceModel.UpdateUserRequest) error {
 	err := s.userRepository.UpdateUser(ctx, repoModel.UpdateUserRequest{
 		ID:   request.ID,
 		Name: request.Name,

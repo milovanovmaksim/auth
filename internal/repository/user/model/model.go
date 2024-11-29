@@ -20,7 +20,6 @@ type CreateUserRequest struct {
 	Role         string
 }
 
-
 // GetUserResponse ответ на запрос о получении информации о пользователе.
 type GetUserResponse struct {
 	CreatedAt time.Time    `db:"created_at"`

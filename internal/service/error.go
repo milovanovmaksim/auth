@@ -2,9 +2,6 @@ package service
 
 import "fmt"
 
-
-
-
 type LengthPasswordError struct {
 	length int64
 }
@@ -17,8 +14,7 @@ func (e LengthPasswordError) Error() string {
 	return fmt.Sprintf("password must be more then %v characters", e.length)
 }
 
-
-type EmptyPasswordError struct {}
+type EmptyPasswordError struct{}
 
 func NewEmptyPasswordError() EmptyPasswordError {
 	return EmptyPasswordError{}
@@ -28,8 +24,7 @@ func (e EmptyPasswordError) Error() string {
 	return "password is empty"
 }
 
-
-type ConfirmationPasswordError struct {}
+type ConfirmationPasswordError struct{}
 
 func NewConfirmationPasswordError() ConfirmationPasswordError {
 	return ConfirmationPasswordError{}

@@ -57,7 +57,6 @@ func (s *Server) CreateUser(ctx context.Context, req *desc.CreateUserRequest) (*
 		return nil, err
 	}
 
-
 	return &desc.CreateUserResponse{Id: userID}, nil
 }
 

@@ -3,7 +3,6 @@ package model
 import (
 	"time"
 
-
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 

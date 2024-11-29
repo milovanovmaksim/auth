@@ -7,14 +7,14 @@ import (
 
 	repoModel "github.com/milovanovmaksim/auth/internal/repository/user/model"
 	"github.com/milovanovmaksim/auth/internal/service"
-	"github.com/milovanovmaksim/auth/internal/service/user/model"
+	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 )
 
 // CreateUser создает новго пользователя.
-func (s *userServiceImpl) CreateUser(ctx context.Context, request model.CreateUserRequest) (int64, error) {
-	err := checkPassword(request)
+func (s *userServiceImpl) CreateUser(ctx context.Context, request serviceModel.CreateUserRequest) (int64, error) {
+	err := validateInputData(request)
 	if err != nil {
-		log.Printf("failed to create new user || error: %v", err)
+		log.Printf("failed to validate input data: %v", err)
 		return 0, err
 	}
 
@@ -38,17 +38,51 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request model.CreateUs
 	return userID, nil
 }
 
-func checkPassword(request model.CreateUserRequest) error {
+func checkPassword(request serviceModel.CreateUserRequest) error {
 	if request.Password == "" {
-		return service.NewEmptyPasswordError()
+		return service.ValidationError{String: "password is empty"}
 	}
 
 	if len(request.Password) <= 8 {
-		return service.NewLengthPasswordError(8)
+		return service.ValidationError{String: "password must be more than 8 characters"}
 	}
 
 	if request.Password != request.PasswordConfirm {
-		return service.NewConfirmationPasswordError()
+		return service.ValidationError{String: "password and password_confirm must be the same"}
+	}
+
+	return nil
+}
+
+func checkName(request serviceModel.CreateUserRequest) error {
+	if request.Name == "" {
+		return service.ValidationError{String: "field 'name' is empty"}
+	}
+	return nil
+}
+
+func checkEmail(request serviceModel.CreateUserRequest) error {
+	if request.Email == "" {
+		return service.ValidationError{String: "fieal 'Email' is empty"}
+	}
+
+	return nil
+}
+
+func validateInputData(request serviceModel.CreateUserRequest) error {
+	err := checkName(request)
+	if err != nil {
+		return err
+	}
+
+	err = checkEmail(request)
+	if err != nil {
+		return err
+	}
+
+	err = checkPassword(request)
+	if err != nil {
+		return err
 	}
 
 	return nil

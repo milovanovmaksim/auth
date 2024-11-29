@@ -3,11 +3,12 @@ package converter
 import (
 	"time"
 
-	"github.com/milovanovmaksim/auth/internal/repository/user/model"
+	repoModel "github.com/milovanovmaksim/auth/internal/repository/user/model"
 	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 )
 
-func ToServiceFromGetUserResponse(model model.GetUserResponse) serviceModel.GetUserResponse {
+// ToServiceFromGetUserResponse конвертирует repoModel.GetUserResponse в serviceModel.GetUserResponse.
+func ToServiceFromGetUserResponse(model repoModel.GetUserResponse) serviceModel.GetUserResponse {
 	var updatedAt *time.Time
 
 	if model.UpdatedAt.Valid {

@@ -3,25 +3,26 @@ package converter
 import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/milovanovmaksim/auth/internal/service/user/model"
+	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 	desc "github.com/milovanovmaksim/auth/pkg/auth_v1"
 )
 
-func ToDescFromGetUserResponse(model model.GetUserResponse) desc.GetUserResponse {
+// ToDescFromGetUserResponse конвертирует serviceModel.GetUserResponse в desc.GetUserResponse.
+func ToDescFromGetUserResponse(value serviceModel.GetUserResponse) desc.GetUserResponse {
 	var updatedAt *timestamppb.Timestamp
 
-	if model.UpdatedAt != nil {
-		updatedAt = timestamppb.New(*model.UpdatedAt)
+	if value.UpdatedAt != nil {
+		updatedAt = timestamppb.New(*value.UpdatedAt)
 	}
+
 	return desc.GetUserResponse{
 		User: &desc.User{
-			Id:        model.ID,
-			Name:      model.Name,
-			Email:     model.Email,
-			Role:      desc.Role(desc.Role_value[model.Role]),
-			CreatedAt: timestamppb.New(model.CreatedAt),
+			Id:        value.ID,
+			Name:      value.Name,
+			Email:     value.Email,
+			Role:      desc.Role(desc.Role_value[value.Role]),
+			CreatedAt: timestamppb.New(value.CreatedAt),
 			UpdatedAt: updatedAt,
 		},
 	}
-
 }

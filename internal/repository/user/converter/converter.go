@@ -8,19 +8,19 @@ import (
 )
 
 // ToServiceFromGetUserResponse конвертирует repoModel.GetUserResponse в serviceModel.GetUserResponse.
-func ToServiceFromGetUserResponse(model repoModel.GetUserResponse) serviceModel.GetUserResponse {
+func ToServiceFromGetUserResponse(value repoModel.GetUserResponse) serviceModel.GetUserResponse {
 	var updatedAt *time.Time
 
-	if model.UpdatedAt.Valid {
-		updatedAt = &model.UpdatedAt.Time
+	if value.UpdatedAt.Valid {
+		updatedAt = &value.UpdatedAt.Time
 	}
 
 	return serviceModel.GetUserResponse{
-		ID:        model.ID,
-		Name:      model.Name,
-		Email:     model.Email,
-		Role:      model.Role,
-		CreatedAt: model.CreatedAt,
+		ID:        value.ID,
+		Name:      value.Name,
+		Email:     value.Email,
+		Role:      value.Role,
+		CreatedAt: value.CreatedAt,
 		UpdatedAt: updatedAt,
 	}
 }

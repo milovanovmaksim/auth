@@ -6,7 +6,7 @@ type ValidationError struct {
 	String string
 }
 
-// Error возвращает строковое представление ошибки.
+// Error возвращает текст ошибки.
 func (v ValidationError) Error() string {
 	return v.String
 }

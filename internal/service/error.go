@@ -1,7 +1,7 @@
 package service
 
 // ValidationError представляет ошибку валидации входных данных.
-// Удовлетворяет интерфейсу erors.Error.
+// Удовлетворяет интерфейсу error.
 type ValidationError struct {
 	String string
 }

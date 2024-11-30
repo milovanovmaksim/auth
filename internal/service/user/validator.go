@@ -36,6 +36,7 @@ func checkEmail(request serviceModel.CreateUserRequest) error {
 	return nil
 }
 
+// ValidateInputData валидирует входные данные.
 func ValidateInputData(request serviceModel.CreateUserRequest) error {
 	err := checkName(request)
 	if err != nil {

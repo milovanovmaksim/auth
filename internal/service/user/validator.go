@@ -1,8 +1,8 @@
 package user
 
 import (
-	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 	appError "github.com/milovanovmaksim/auth/internal/error"
+	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 )
 
 func checkPassword(request serviceModel.CreateUserRequest) error {

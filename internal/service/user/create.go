@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"log"
 
+	appError "github.com/milovanovmaksim/auth/internal/error"
 	repoModel "github.com/milovanovmaksim/auth/internal/repository/user/model"
 	serviceModel "github.com/milovanovmaksim/auth/internal/service/user/model"
 )
@@ -20,7 +20,7 @@ func (s *userServiceImpl) CreateUser(ctx context.Context, request serviceModel.C
 	hashPassword, err := s.hashPassword(request.Password)
 	if err != nil {
 		log.Printf("failed to get hash for password: %v", err)
-		return 0, fmt.Errorf("internal error")
+		return 0, appError.InternalError{String: "internal error"}
 	}
 
 	userID, err := s.userRepository.CreateUser(ctx, repoModel.CreateUserRequest{

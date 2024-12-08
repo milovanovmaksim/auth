@@ -1,4 +1,4 @@
-package pgsql
+package postgresql
 
 import (
 	"fmt"

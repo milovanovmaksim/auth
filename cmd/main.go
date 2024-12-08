@@ -4,43 +4,19 @@ import (
 	"context"
 	"log"
 
-	"github.com/joho/godotenv"
-
-	"github.com/milovanovmaksim/auth/cmd/auth_server"
-	grpcConfig "github.com/milovanovmaksim/auth/internal/config"
-	"github.com/milovanovmaksim/auth/internal/pgsql"
+	"github.com/milovanovmaksim/auth/internal/app"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("failed to load config || err: %v", err)
-	}
-
 	ctx := context.Background()
 
-	dbConfig, err := pgsql.NewConfigFromEnv()
+	app, err := app.NewApp(ctx, ".env")
 	if err != nil {
-		log.Fatalf("failed to load config || err: %v", err)
+		log.Fatalf("failed to init app: %s", err.Error())
 	}
 
-	grpcConfig, err := grpcConfig.NewGrpcConfigFromEnv()
+	err = app.Run()
 	if err != nil {
-		log.Fatalf("failed to load grpc config || err: %v", err)
+		log.Fatalf("failed to run app: %s", err.Error())
 	}
-
-	postgreSQL, err := pgsql.Connect(ctx, dbConfig)
-	if err != nil {
-		log.Fatalf("failed to connect to PostgreSQL || err: %v", err)
-	}
-
-	defer postgreSQL.Close()
-
-	server := auth_server.NewServer(postgreSQL, grpcConfig)
-	err = server.Start()
-	if err != nil {
-		log.Fatalf("failed to start a server || err: %v", err)
-	}
-
-	defer server.Stop()
 }
